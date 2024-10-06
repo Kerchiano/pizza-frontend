@@ -2,6 +2,7 @@ import { useGetRestaurantsByCityQuery } from "../apiSlice";
 import useToggle from "./hooks/useToggle";
 import useClickOutside from "./hooks/useClickOutside";
 import { UtensilsCrossed } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface IRestaurantList {
   citySlug: string;
@@ -11,24 +12,32 @@ const RestaurantList = ({ citySlug }: IRestaurantList) => {
   const { data = [] } = useGetRestaurantsByCityQuery(citySlug);
   const { isToggled, toggle, setFalse } = useToggle();
   const dropListRef = useClickOutside(() => setFalse());
+  const navigate = useNavigate();
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, slug: string) => {
+    e.preventDefault();
+    setFalse();
+    navigate(`/${citySlug}/restaurants/${slug}`);
+  };
 
   return (
     <div ref={dropListRef} className="ml-8 relative mr-4 text-base lg:ml-4 ">
-      <a onClick={toggle} href="#" className="drop-list-triangle flex">
+      <div onClick={toggle} className="drop-list-triangle flex cursor-pointer text-white font-medium">
         <UtensilsCrossed className="hidden sm:block lg:hidden" />
-        <span className="duration-base-transition block sm:hidden lg:block">Ресторани</span>
-      </a>
+        <span className="duration-base-transition block sm:hidden lg:block text-black lg:text-white">Ресторани</span>
+      </div>
       {isToggled && (
         <div className="drop-list-content w-[380px]">
           <div className="drop-list-content-scroll">
             <ul>
               <li className="mt-4 mb-4">
                 <a
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.preventDefault();
                     setFalse();
+                    navigate(`/${citySlug}/restaurants`);
                   }}
                   className="text-zinc-600 pointer-events-auto hover:text-custom-orange duration-base-transition"
-                  href="#"
+                  href={`/${citySlug}/restaurants`}
                 >
                   Всі ресторани
                 </a>
@@ -36,11 +45,9 @@ const RestaurantList = ({ citySlug }: IRestaurantList) => {
               {data.map((item) => (
                 <li className="mt-4 mb-4" key={item.id}>
                   <a
-                    onClick={() => {
-                      setFalse();
-                    }}
+                    onClick={(e) => handleClick(e, item.slug)}
                     className="text-zinc-600 pointer-events-auto hover:text-custom-orange duration-base-transition"
-                    href="#"
+                    href={`/${citySlug}/restaurants/${item.slug}`}
                   >
                     {item.address}
                   </a>

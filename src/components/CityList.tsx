@@ -12,13 +12,25 @@ const CityList = ({ city, newCity }: ICityList) => {
   const { data = [] } = useGetItemsQuery();
   const { isToggled, toggle, setFalse } = useToggle();
   const dropListRef = useClickOutside(() => setFalse());
+  const handleClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    name: string,
+    slug: string
+  ) => {
+    e.preventDefault();
+    newCity(name, slug);
+    setFalse();
+  };
 
   return (
     <div ref={dropListRef} className="ml-4 relative mr-4 text-base">
-      <a onClick={toggle} href="#" className="drop-list-triangle flex">
+      <div
+        onClick={toggle}
+        className="drop-list-triangle flex cursor-pointer text-white font-medium"
+      >
         <MapPin className="block lg:hidden" />
         <span className="duration-base-transition">{city}</span>
-      </a>
+      </div>
       {isToggled && (
         <div className="drop-list-content">
           <div className="drop-list-content-scroll">
@@ -26,12 +38,9 @@ const CityList = ({ city, newCity }: ICityList) => {
               {data.map((item) => (
                 <li className="mt-4 mb-4" key={item.id}>
                   <a
-                    onClick={() => {
-                      newCity(item.name, item.slug);
-                      setFalse();
-                    }}
+                    onClick={(e) => handleClick(e, item.name, item.slug)}
                     className="text-zinc-600 pointer-events-auto hover:text-custom-orange duration-base-transition"
-                    href="#"
+                    href={`/${item.slug}`}
                   >
                     {item.name}
                   </a>

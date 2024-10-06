@@ -4,12 +4,19 @@ import RestaurantList from "./RestaurantList";
 import ContactList from "./ContactsList";
 import { Menu, ShoppingBasket, X } from "lucide-react";
 import { useGetCategoriesQuery } from "../apiSlice";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../store";
+import { setCityName, setCitySlug } from "../citySlice";
 
-const navbar = () => {
-  const [cityName, setCityName] = useState("Київ");
-  const [citySlug, setCitySlug] = useState("kiyiv");
+const Navbar = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const cityName = useSelector((state: RootState) => state.city.cityName);
+  const citySlug = useSelector((state: RootState) => state.city.citySlug);
   const [isOpen, setIsOpen] = useState(false);
   const { data = [] } = useGetCategoriesQuery();
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -22,14 +29,16 @@ const navbar = () => {
   };
 
   const newCity = (name: string, slug: string) => {
-    setCityName(name);
-    setCitySlug(slug);
+    dispatch(setCityName(name));
+    dispatch(setCitySlug(slug));
+    navigate(`/${slug}`);
   };
+
   return (
     <>
-      <div
+      <header
         onClick={closeMenu}
-        className="w-full flex items-center h-20 bg-custom-red bg-[url('https://raw.githubusercontent.com/Kerchiano/storage-photos/main/pizza_photos/header-background-layer.png')] relative"
+        className="w-full flex items-center bg-custom-red bg-[url('https://raw.githubusercontent.com/Kerchiano/storage-photos/main/pizza_photos/header-background-layer.png')]"
       >
         <div
           onClick={toggleMenu}
@@ -74,14 +83,17 @@ const navbar = () => {
             </div>
           </div>
         </div>
-        <div className="absolute hidden lg:block w-20 cursor-pointer left-1/2 right-1/2">
+        <div
+          onClick={() => navigate(`/${citySlug}`)}
+          className="absolute hidden lg:block w-20 cursor-pointer left-1/2 right-1/2"
+        >
           <img
             className="w-auto max-h-8"
             src="https://raw.githubusercontent.com/Kerchiano/storage-photos/main/pizza_photos/mafia-new_style-logo.png"
             alt=""
           />
         </div>
-      </div>
+      </header>
       <div className={`hamburger-menu ${isOpen ? "open" : "closed"}`}>
         <div className="wrapper-hamburger-menu-top hover:text-transparent">
           <div className="user-cabinet ml-8 flex justify-center">
@@ -99,9 +111,18 @@ const navbar = () => {
       <div className="category-menu hover:not-main-page">
         <ul>
           {data.map((category) => (
-            <li>
-              <a href="#" className="flex px-6 py-4 w-52 items-center border-b hover:bg-orange-300">
-                <img className="mr-3" src={category.icon} width={30} height={30} alt="" />
+            <li
+              key={category.id}
+              onClick={(e) => {
+                e.preventDefault();
+                navigate(`/${citySlug}/products/${category.slug}`);
+              }}
+            >
+              <a
+                href="#"
+                className="flex px-6 py-4 w-52 items-center border-b hover:bg-orange-300"
+              >
+                <img className="mr-3 h-8 w-8" src={category.icon} alt="" />
                 <span className="text-black">{category.title}</span>
               </a>
             </li>
@@ -112,4 +133,4 @@ const navbar = () => {
   );
 };
 
-export default navbar;
+export default Navbar;

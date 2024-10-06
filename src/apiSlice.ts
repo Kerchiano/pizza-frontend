@@ -26,8 +26,31 @@ export interface Restaurant {
 
 export interface Category {
   id: number;
+  slug: string;
   title: string;
-  icon: string
+  icon: string;
+  description: string;
+}
+
+export interface Image {
+  image: string;
+}
+
+export interface Product {
+  id: number;
+  title: string;
+  description: string;
+  price: number;
+  image: string;
+  category: Category;
+  topping: Topping[];
+  created_at: string;
+}
+
+export interface Topping {
+  id: number;
+  title: string;
+  price: number;
 }
 
 export const apiSlice = createApi({
@@ -43,7 +66,28 @@ export const apiSlice = createApi({
     getCategories: builder.query<Category[], void>({
       query: () => `/categories/`,
     }),
+    getImages: builder.query<Image[], void>({
+      query: () =>
+        "https://raw.githubusercontent.com/Kerchiano/storage-photos/main/discount/discount_data.json",
+    }),
+    getProducts: builder.query<Product[], { categorySlug: string; filter?: string }>({
+      query: ({ categorySlug, filter }) => {
+        let url = `/products/?category=${categorySlug}`;
+        
+        if (filter) {
+          url += `&sort_by=${filter}`;
+        }
+        
+        return url;
+      },
+    }),
   }),
 });
 
-export const { useGetItemsQuery, useGetRestaurantsByCityQuery, useGetCategoriesQuery  } = apiSlice;
+export const {
+  useGetItemsQuery,
+  useGetRestaurantsByCityQuery,
+  useGetCategoriesQuery,
+  useGetImagesQuery,
+  useGetProductsQuery,
+} = apiSlice;
