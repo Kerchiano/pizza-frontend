@@ -21,7 +21,7 @@ const ContactList = () => {
   const dropListRef = useClickOutside(() => setFalse());
 
   return (
-    <div ref={dropListRef} className="ml-8 relative mr-4 text-base lg:ml-4">
+    <div ref={dropListRef} className="ml-3 relative mr-4 text-base sm:ml-8 lg:ml-4">
       <span onClick={toggle} className="drop-list-triangle cursor-pointer">
         <span className="duration-base-transition text-white font-medium hidden lg:block">
           Контакти

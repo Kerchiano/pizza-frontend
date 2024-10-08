@@ -20,7 +20,7 @@ const RestaurantList = ({ citySlug }: IRestaurantList) => {
   };
 
   return (
-    <div ref={dropListRef} className="ml-8 relative mr-4 text-base lg:ml-4 ">
+    <div ref={dropListRef} className="ml-8 relative mr-4 text-base  lg:ml-4 ">
       <div onClick={toggle} className="drop-list-triangle flex cursor-pointer text-white font-medium">
         <UtensilsCrossed className="hidden sm:block lg:hidden" />
         <span className="duration-base-transition block sm:hidden lg:block text-black lg:text-white">Ресторани</span>

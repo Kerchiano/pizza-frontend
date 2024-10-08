@@ -42,10 +42,10 @@ const Navbar = () => {
       >
         <div
           onClick={toggleMenu}
-          className="flex h-10 min-w-10 mr-6 ml-6 cursor-pointer items-center justify-center"
+          className="flex h-10 px-4 py-0 sm:px-6 sm:py-0 min-w-10 cursor-pointer items-center justify-center"
         >
           {!isOpen ? (
-            <Menu size={40} color="white" />
+            <Menu className="h-8 sm:h-10" size={40} color="white" />
           ) : (
             <X size={40} color="white" />
           )}
@@ -71,24 +71,22 @@ const Navbar = () => {
                 />
               </a>
             </div>
-            <div className="shopping-cart ml-8">
-              <a className="cart-toggle inline-block relative" href="#">
-                <span className="absolute">
+            <div className="shopping-cart ml-2 sm:ml-7">
+              <a className="cart-toggle flex sm:flex relative" href="#">
                   <span data-cart="0" className="relative shopping-cart-icon">
                     <ShoppingBasket />
                   </span>
-                </span>
-                <span className="pl-8">Кошик</span>
+                <span className="pl-2 hidden sm:inline-block">Кошик</span>
               </a>
             </div>
           </div>
         </div>
         <div
           onClick={() => navigate(`/${citySlug}`)}
-          className="absolute hidden lg:block w-20 cursor-pointer left-1/2 right-1/2"
+          className="absolute w-20 cursor-pointer left-16 sm:left-24 lg:left-1/2"
         >
           <img
-            className="w-auto max-h-8"
+            className="w-auto max-h-8 logo-mafia"
             src="https://raw.githubusercontent.com/Kerchiano/storage-photos/main/pizza_photos/mafia-new_style-logo.png"
             alt=""
           />

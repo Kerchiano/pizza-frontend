@@ -39,6 +39,7 @@ export interface Image {
 export interface Product {
   id: number;
   title: string;
+  slug: string;
   description: string;
   price: number;
   image: string;
@@ -70,16 +71,22 @@ export const apiSlice = createApi({
       query: () =>
         "https://raw.githubusercontent.com/Kerchiano/storage-photos/main/discount/discount_data.json",
     }),
-    getProducts: builder.query<Product[], { categorySlug: string; filter?: string }>({
+    getProducts: builder.query<
+      Product[],
+      { categorySlug: string; filter?: string }
+    >({
       query: ({ categorySlug, filter }) => {
         let url = `/products/?category=${categorySlug}`;
-        
+
         if (filter) {
           url += `&sort_by=${filter}`;
         }
-        
+
         return url;
       },
+    }),
+    getProduct: builder.query<Product, string>({
+      query: (productSlug) => `/products/${productSlug}/`,
     }),
   }),
 });
@@ -90,4 +97,5 @@ export const {
   useGetCategoriesQuery,
   useGetImagesQuery,
   useGetProductsQuery,
+  useGetProductQuery,
 } = apiSlice;

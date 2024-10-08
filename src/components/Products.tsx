@@ -1,19 +1,30 @@
-import { useParams } from "react-router-dom";
-import { useGetCategoriesQuery, useGetProductsQuery } from "../apiSlice";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import {
+  Product,
+  useGetCategoriesQuery,
+  useGetProductsQuery,
+} from "../apiSlice";
 import { useEffect, useRef, useState } from "react";
 
 const Products = () => {
-  const { productSlug } = useParams<{ productSlug: string }>();
+  const { categorySlug } = useParams<{ categorySlug: string }>();
+  const { citySlug } = useParams<{ citySlug: string }>();
+  const [searchParams] = useSearchParams();
+  const currentFilter = searchParams.get("sort");
   const { data: categories = [] } = useGetCategoriesQuery();
-  const category = categories.find((item) => item.slug == productSlug);
-  const categorySlug = category?.slug || "";
-  const [filter, setFilter] = useState("");
-  const { data: products = [] } = useGetProductsQuery({ categorySlug, filter });
+  const category = categories.find((item) => item.slug == categorySlug);
+  const [filter, setFilter] = useState(currentFilter || "");
+  const { data: products = [] } = useGetProductsQuery({
+    categorySlug: categorySlug || "",
+    filter,
+  });
   const [isVisible, setIsVisible] = useState(false);
   const popupRef = useRef<HTMLDivElement>(null);
   const [checkedToppings, setCheckedToppings] = useState<{
     [productId: number]: { [toppingId: number]: boolean };
   }>({});
+
+  const navigate = useNavigate();
 
   const handleCheckboxChange = (productId: number, toppingId: number) => {
     setCheckedToppings((prev) => ({
@@ -48,10 +59,22 @@ const Products = () => {
     };
   }, [popupRef]);
 
-  const handleFilterChange = (newFilter: string) => {
+  const handleFilterChange = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    newFilter: string
+  ) => {
+    e.preventDefault();
     setFilter(newFilter);
+    navigate(`/${citySlug}/products/${categorySlug}/?sort=${newFilter}`);
   };
 
+  const handleProductDetail = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    product: Product
+  ) => {
+    e.preventDefault();
+    navigate(`/${citySlug}/product/${product.slug}`);
+  };
   return (
     <>
       <main className="pl-20 pt-20 flex-1 flex w-full flex-col">
@@ -75,19 +98,44 @@ const Products = () => {
               >
                 <ul>
                   <li>
-                    <a href="#" onClick={() => handleFilterChange('popular')}>по популярності</a>
+                    <a
+                      href={`/${citySlug}/products/${categorySlug}/?sort=popular`}
+                      onClick={(e) => handleFilterChange(e, "popular")}
+                    >
+                      по популярності
+                    </a>
                   </li>
                   <li>
-                    <a href="#" onClick={() => handleFilterChange('newest')}>по новизні</a>
+                    <a
+                      href={`/${citySlug}/products/${categorySlug}/?sort=newest`}
+                      onClick={(e) => handleFilterChange(e, "newest")}
+                    >
+                      по новизні
+                    </a>
                   </li>
                   <li>
-                    <a href="#" onClick={() => handleFilterChange('price_desc')}>за зменшенням ціни</a>
+                    <a
+                      href={`/${citySlug}/products/${categorySlug}/?sort=price_desc`}
+                      onClick={(e) => handleFilterChange(e, "price_desc")}
+                    >
+                      за зменшенням ціни
+                    </a>
                   </li>
                   <li>
-                    <a href="#" onClick={() => handleFilterChange('price_asc')}>за зростанням ціни</a>
+                    <a
+                      href={`/${citySlug}/products/${categorySlug}/?sort=price_asc`}
+                      onClick={(e) => handleFilterChange(e, "price_asc")}
+                    >
+                      за зростанням ціни
+                    </a>
                   </li>
                   <li>
-                    <a href="#" onClick={() => handleFilterChange('alphabetical')}>за алфавітом</a>
+                    <a
+                      href={`/${citySlug}/products/${categorySlug}/?sort=alphabetical`}
+                      onClick={(e) => handleFilterChange(e, "alphabetical")}
+                    >
+                      за алфавітом
+                    </a>
                   </li>
                 </ul>
               </div>
@@ -99,8 +147,9 @@ const Products = () => {
             {products.map((product) => (
               <div key={product.id} className="product-item">
                 <a
+                  onClick={(e) => handleProductDetail(e, product)}
                   className="w-full relative overflow-hidden cursor-pointer text-black block"
-                  href="#"
+                  href={`/${citySlug}/product/${product.slug}`}
                 >
                   <img
                     className="m-auto w-full h-full object-cover"
@@ -110,7 +159,10 @@ const Products = () => {
                 </a>
                 <div className="product-properties">
                   <div className="product-title">
-                    <a href="#">{`${product.title}`}</a>
+                    <a
+                      onClick={(e) => handleProductDetail(e, product)}
+                      href={`/${citySlug}/product/${product.slug}`}
+                    >{`${product.title}`}</a>
                   </div>
                   <div className="product-top">
                     <div className="product-weight"></div>
