@@ -324,7 +324,7 @@ footer {
 }
 
 .sort-filter-list-popup {
-  display: none;
+  display: block;
   position: absolute;
   background: #fff;
   padding: 0 20px;
@@ -703,6 +703,26 @@ header {
   transition: 0.3s ease;
 }
 
+.button-active {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.button-active input {
+  color: #fff;
+  font-size: 18px;
+  background: 0 0;
+  border: none;
+  width: 35px;
+  text-align: center;
+  height: 20px;
+  margin: 0 5px;
+  border-right: 1px solid rgba(255, 255, 255, 0.5);
+  border-left: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 0;
+}
+
 .product-buy-button span {
   display: block;
   padding: 5px 0;
@@ -770,10 +790,6 @@ header {
 
   .discount-section {
     padding-top: 120px;
-  }
-
-  .drop-list-content {
-    left: -180px;
   }
 
   .slick-prev {
@@ -1027,10 +1043,14 @@ header {
   .products-list .product-item {
     width: calc(33.333% - 60px);
   }
+  .restaurant-list .restaurant-item {
+    width: calc(33.333% - 30px);
+  }
 }
 
 @media (max-width: 1200px) {
-  .products-list .product-item {
+  .products-list .product-item,
+  .restaurant-list .restaurant-item {
     width: calc(50% - 60px);
   }
 }
@@ -1073,6 +1093,47 @@ header {
     margin-left: 10px;
     margin-right: 10px;
   }
+
+  .restaurants {
+    padding: 20px 20px 0 !important;
+  }
+
+  .restaurant-list {
+    margin: 0 !important;
+  }
+
+  .restaurant-list .restaurant-item {
+    width: calc(50% - 20px) !important;
+    margin-left: 10px !important;
+    margin-right: 10px !important;
+  }
+
+  .restaurant-list .restaurant-item .worktime-phones {
+    flex-wrap: wrap;
+  }
+
+  .restaurant-info {
+    padding: 20px;
+  }
+
+  .restaurant-info .worktime-phones {
+    flex-wrap: wrap !important;
+    font-size: 20px !important;
+    line-height: 30px !important;
+  }
+
+  .restaurant-info .worktime-phones .worktime {
+    width: 100% !important;
+    margin-bottom: 20px;
+  }
+
+  .restaurant-info .worktime-phones .phones {
+    width: 100% !important;
+  }
+
+  .restaurant-info {
+    padding: 20px !important;
+  }
 }
 
 @media (max-width: 600px) {
@@ -1080,10 +1141,11 @@ header {
     padding: 0;
   }
 
-  .products-list .product-item {
-    width: 100%;
+  .products-list .product-item,
+  .restaurant-list .restaurant-item {
+    width: 100% !important;
     max-width: 375px;
-    margin: 0 0 15px;
+    margin: 0 0 15px !important;
   }
   .logo-mafia {
     height: 22px;
@@ -1091,6 +1153,12 @@ header {
 
   .bottom {
     padding: 25px 15px;
+  }
+}
+
+@media (max-width: 640px) {
+  .contacts {
+    left: -180px;
   }
 }
 
@@ -1117,4 +1185,412 @@ header {
   .slick-next {
     display: none !important;
   }
+}
+
+.restaurants-page {
+  padding: 40px 40px 0;
+  background: #fff;
+}
+
+.restaurants-page .block-title {
+  font-size: 36px;
+  line-height: 40px;
+  font-family: "Museo", sans-serif;
+  position: relative;
+  margin-bottom: 60px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.restaurants-page .block-title:after {
+  content: "";
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  margin-left: -80px;
+  width: 160px;
+  height: 16px;
+  background: url("https://raw.githubusercontent.com/Kerchiano/storage-photos/refs/heads/main/pizza_photos/fff.png")
+    0 0 no-repeat;
+}
+
+.restaurants-page .restaurants-filter {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.restaurants-page .restaurants-filter .city {
+  height: 50px;
+  border-top: 1px solid rgba(169, 144, 113, 0.2);
+  border-bottom: 1px solid rgba(169, 144, 113, 0.2);
+  position: relative;
+  width: 350px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 30px;
+}
+
+.restaurants-page .restaurants-filter .city .city-toggle {
+  position: relative;
+  color: #000;
+  text-decoration: none;
+}
+
+.restaurants-page .restaurants-filter .city .city-toggle:after {
+  content: "";
+  position: absolute;
+  right: -15px;
+  top: 8px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 5px 5px 0;
+  border-color: #000 transparent transparent transparent;
+  color: #000;
+  cursor: pointer;
+}
+
+.restaurants-page .restaurants-filter .city .cities-list-popup {
+  display: block;
+  position: absolute;
+  background: #fff;
+  left: 0;
+  right: 0;
+  top: 60px;
+  border-radius: 3px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+  z-index: 3423;
+}
+
+.restaurants-page
+  .restaurants-filter
+  .city
+  .cities-list-popup
+  ul
+  li:first-child {
+  border: none;
+}
+
+.restaurants-page .restaurants-filter .city .cities-list-popup ul li {
+  height: 50px;
+  border-top: 1px solid rgba(169, 144, 113, 0.2);
+}
+
+.restaurants-page .restaurants-filter .city .cities-list-popup ul li a {
+  text-decoration: none;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: #000;
+}
+
+.restaurants {
+  padding: 40px 40px 0;
+  background: #fff;
+}
+
+.restaurant-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0 -15px;
+}
+
+.restaurant-list .restaurant-item {
+  border: 1px solid #eee9e3;
+  margin: 0 15px 30px;
+  padding: 0 0 70px;
+  position: relative;
+}
+
+.restaurant-list .restaurant-item .img {
+  display: block;
+  width: 100%;
+  height: 270px;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 30px;
+}
+
+.restaurant-list .restaurant-item .img img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  transform: translateX(-50%) translateY(-50%);
+  display: block;
+}
+
+.restaurant-list .restaurant-item .address {
+  font-family: Museo, sans-serif;
+  font-size: 16px;
+  line-height: 20px;
+  margin-bottom: 30px;
+  padding: 0 30px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.restaurant-list .restaurant-item .worktime-phones {
+  display: flex;
+  justify-content: space-between;
+  color: #000;
+  font-size: 15px;
+  line-height: 20px;
+  padding: 0 30px 30px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.restaurant-list .restaurant-item .worktime-phones span {
+  font-size: 14px;
+}
+
+.restaurant-list .restaurant-item .worktime-phones span {
+  font-size: 14px;
+}
+
+.restaurant-list .restaurant-item .info-wrapper {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  border-top: 1px solid #e7e7e7;
+  z-index: 1;
+}
+
+.restaurant-list .restaurant-item .info {
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.restaurant-list .restaurant-item .info img {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.rest-detail {
+  padding-bottom: 40px;
+}
+
+.rest-detail .block-title {
+  margin-bottom: 40px;
+}
+
+.restaurant-img-section {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-left: auto;
+  max-width: 100%;
+  object-fit: cover;
+  margin-top: 60px;
+  padding-bottom: 40px;
+}
+
+.restaurant-img-section img {
+  object-fit: cover;
+  height: 650px;
+  width: 100%;
+}
+
+.restaurant-info {
+  padding: 40px;
+}
+
+.restaurant-info .worktime-phones {
+  display: flex;
+  font-size: 30px;
+  line-height: 36px;
+  padding-bottom: 40px;
+  margin-bottom: 40px;
+  border-bottom: 1px solid #e7e7e7;
+}
+
+.restaurant-info .worktime-phones .worktime {
+  width: 50%;
+  background: url("https://raw.githubusercontent.com/Kerchiano/storage-photos/refs/heads/main/pizza_photos/dtime.png")
+    0 0 no-repeat;
+  padding-left: 55px;
+}
+
+.restaurant-info .worktime-phones .worktime span,
+.restaurant-info .worktime-phones .phones span {
+  font-size: 14px;
+  line-height: 20px;
+  display: block;
+}
+
+.restaurant-info .worktime-phones .phones {
+  width: 50%;
+  background: url("https://raw.githubusercontent.com/Kerchiano/storage-photos/refs/heads/main/pizza_photos/dphone.png")
+    0 0 no-repeat;
+  padding-left: 55px;
+}
+
+.restaurant-info .description {
+  margin-bottom: 40px;
+}
+
+.restaurant-info .description p {
+  font-size: 18px;
+  line-height: 24px;
+  margin-bottom: 20px;
+  font-family: "Museo", sans-serif;
+}
+
+.restaurant-info .info img {
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 20px;
+}
+
+.pop-cart {
+  position: fixed;
+  top: 80px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 99999;
+  display: none;
+  transition: 0.3s ease;
+  overflow: hidden;
+}
+
+.pop-cart.block {
+  display: block;
+}
+
+.cart-container {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 480px;
+  background: #fff;
+  padding: 50px;
+  box-shadow: 0 0 30px rgba(51, 51, 51, 0.2);
+  transform: translateX(100%);
+  transition: all 0.3s;
+}
+
+.cart-container.active-transform {
+  transform: translateX(0%);
+}
+
+.pop-cart .cart-container .title {
+  font-size: 24px;
+  line-height: 30px;
+  font-weight: 700;
+  margin-bottom: 30px;
+}
+
+.pop-cart .cart-container .cart-item-list {
+  height: calc(100% - 165px);
+  position: relative;
+  margin: 0 -50px 30px;
+  padding: 30px 50px;
+  border-top: 1px solid rgba(169, 144, 113, 0.2);
+  border-bottom: 1px solid rgba(169, 144, 113, 0.2);
+  overflow: hidden;
+  overflow-y: scroll;
+}
+
+.pop-cart .cart-container .full-price {
+  display: flex;
+  justify-content: space-between;
+}
+
+.pop-cart .cart-container .full-price span {
+  color: #000;
+  font-size: 24px;
+  line-height: 24px;
+  margin-bottom: 30px;
+}
+
+.pop-cart .cart-container .full-price span:first-child {
+  font-size: 16px;
+}
+
+.pop-cart .cart-container .cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 30px;
+  margin-top: 30px;
+  border-top: 1px solid rgba(169, 144, 113, 0.2);
+}
+
+.pop-cart .cart-container .cart-item:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.pop-cart .cart-container .cart-item .img {
+  width: 100px;
+  height: 100px;
+  overflow: hidden;
+  border-radius: 3px;
+}
+
+.pop-cart .cart-container .cart-item .img img {
+  max-width: 100%;
+}
+
+.pop-cart .cart-container .cart-item .description {
+  width: calc(100% - 125px);
+  padding: 0 20px;
+  border-bottom: none;
+}
+
+.pop-cart .cart-container .cart-item .description .item-title {
+  display: block;
+  width: 100%;
+  color: #000;
+  font-size: 18px;
+  line-height: 24px;
+  font-family: Museo, sans-serif;
+  word-wrap: break-word;
+}
+
+.pop-cart .cart-container .cart-item .description .item-count {
+  color: #999;
+  font-size: 14px;
+  line-height: 24px;
+  margin: 5px auto;
+  font-weight: 300;
+}
+
+.pop-cart .cart-container .cart-item .description .item-count .spinner {
+  display: flex;
+  align-items: center;
+}
+
+.pop-cart .cart-container .cart-item .description .item-count .spinner input {
+  color: #767676;
+  font-size: 14px;
+  background: 0 0;
+  border: none;
+  width: 35px;
+  text-align: center;
+  height: 20px;
+  line-height: normal;
+}
+
+.item-price {
+  color: #000;
+  font-size: 24px;
+  line-height: 24px;
 }

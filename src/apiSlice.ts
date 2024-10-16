@@ -7,6 +7,7 @@ export interface City {
 }
 
 export interface Service {
+  id: number;
   title: string;
   icon: string;
 }
@@ -14,7 +15,8 @@ export interface Service {
 export interface Restaurant {
   id: number;
   address: string;
-  image: string;
+  image_detail: string;
+  image_thumbnail: string;
   phone_number: string;
   open_time: string;
   close_time: string;
@@ -52,17 +54,21 @@ export interface Topping {
   id: number;
   title: string;
   price: number;
+  quantity: number;
 }
 
 export const apiSlice = createApi({
   reducerPath: "api-cities",
   baseQuery: fetchBaseQuery({ baseUrl: "http://127.0.0.1:8000" }),
   endpoints: (builder) => ({
-    getItems: builder.query<City[], void>({
+    getCities: builder.query<City[], void>({
       query: () => "/cities/",
     }),
     getRestaurantsByCity: builder.query<Restaurant[], string>({
       query: (citySlug) => `/restaurants/?city=${citySlug}`,
+    }),
+    getRestaurantByRestaurantSlug: builder.query<Restaurant, string>({
+      query: (restaurantSlug) => `/restaurants/${restaurantSlug}/`,
     }),
     getCategories: builder.query<Category[], void>({
       query: () => `/categories/`,
@@ -92,10 +98,11 @@ export const apiSlice = createApi({
 });
 
 export const {
-  useGetItemsQuery,
+  useGetCitiesQuery,
   useGetRestaurantsByCityQuery,
   useGetCategoriesQuery,
   useGetImagesQuery,
   useGetProductsQuery,
   useGetProductQuery,
+  useGetRestaurantByRestaurantSlugQuery
 } = apiSlice;

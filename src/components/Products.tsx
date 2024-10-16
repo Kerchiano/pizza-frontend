@@ -4,10 +4,29 @@ import {
   useGetCategoriesQuery,
   useGetProductsQuery,
 } from "../apiSlice";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import useToggle from "./hooks/useToggle";
+import useClickOutside from "./hooks/useClickOutside";
+import { RootState } from "../store";
+import { useSelector } from "react-redux";
+import {
+  addItemToCart,
+  addToppingItemToCart,
+  decreaseItemQuantity,
+  decreaseToppingItemQuantity,
+  increaseItemQuantity,
+  increaseToppingItemQuantity,
+  selectCartToppingItems,
+  Topping,
+} from "../cartSlice";
+import { useDispatch } from "react-redux";
+import { Minus, Plus } from "lucide-react";
 
 const Products = () => {
   const { categorySlug } = useParams<{ categorySlug: string }>();
+  const cartItems = useSelector((state: RootState) => state.cart.items);
+  const сartToppingItems = useSelector(selectCartToppingItems);
+  const dispatch = useDispatch();
   const { citySlug } = useParams<{ citySlug: string }>();
   const [searchParams] = useSearchParams();
   const currentFilter = searchParams.get("sort");
@@ -18,46 +37,10 @@ const Products = () => {
     categorySlug: categorySlug || "",
     filter,
   });
-  const [isVisible, setIsVisible] = useState(false);
-  const popupRef = useRef<HTMLDivElement>(null);
-  const [checkedToppings, setCheckedToppings] = useState<{
-    [productId: number]: { [toppingId: number]: boolean };
-  }>({});
+  const { isToggled, toggle, setFalse } = useToggle();
+  const dropListRef = useClickOutside(() => setFalse());
 
   const navigate = useNavigate();
-
-  const handleCheckboxChange = (productId: number, toppingId: number) => {
-    setCheckedToppings((prev) => ({
-      ...prev,
-      [productId]: {
-        ...prev[productId],
-        [toppingId]: !prev[productId]?.[toppingId],
-      },
-    }));
-  };
-
-  const togglePopup = () => {
-    setIsVisible((prev) => !prev);
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (
-        popupRef.current &&
-        !popupRef.current.contains(event.target as Node) &&
-        !target.classList.contains("sort-filter")
-      ) {
-        setIsVisible(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [popupRef]);
 
   const handleFilterChange = (
     e: React.MouseEvent<HTMLAnchorElement>,
@@ -66,6 +49,7 @@ const Products = () => {
     e.preventDefault();
     setFilter(newFilter);
     navigate(`/${citySlug}/products/${categorySlug}/?sort=${newFilter}`);
+    setFalse();
   };
 
   const handleProductDetail = (
@@ -75,6 +59,66 @@ const Products = () => {
     e.preventDefault();
     navigate(`/${citySlug}/product/${product.slug}`);
   };
+
+  const productItem = (product: Product) => {
+    return cartItems.find((item) => product?.id == item.id);
+  };
+
+  const handleAddToCart = (item: Product) => {
+    const newItem = {
+      id: item.id,
+      title: item.title,
+      price: item.price,
+      quantity: 1,
+      image: item.image,
+      options: item.topping,
+    };
+    dispatch(addItemToCart(newItem));
+  };
+
+  const handleIncreaseQuantity = (itemId: number) => {
+    dispatch(increaseItemQuantity(itemId));
+  };
+
+  const handleDecreaseQuantity = (itemId: number) => {
+    dispatch(decreaseItemQuantity(itemId));
+  };
+
+  const handleAddItemToppingToCart = (itemId: number, topping: Topping) => {
+    dispatch(addToppingItemToCart({ itemId, topping }));
+  };
+
+  const handleIncreaseToppingQuantity = (toppingId: number) => {
+    dispatch(increaseToppingItemQuantity(toppingId));
+  };
+
+  const handleDecreaseToppingQuantity = (toppingId: number) => {
+    dispatch(decreaseToppingItemQuantity(toppingId));
+  };
+
+  const handleToppingChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    productId: number,
+    topping: Topping,
+    cartToppingItems: Topping[],
+    handleAddItemToppingToCart: (productId: number, topping: Topping) => void,
+    handleIncreaseToppingQuantity: (toppingId: number) => void,
+    handleDecreaseToppingQuantity: (toppingId: number) => void
+  ) => {
+    if (e.target.checked) {
+      const productToppingExists = cartToppingItems.some(
+        (existingTopping) => existingTopping.id === topping.id
+      );
+      if (!productToppingExists) {
+        handleAddItemToppingToCart(productId, topping);
+      } else {
+        handleIncreaseToppingQuantity(topping.id);
+      }
+    } else {
+      handleDecreaseToppingQuantity(topping.id);
+    }
+  };
+
   return (
     <>
       <main className="pl-20 pt-20 flex-1 flex w-full flex-col">
@@ -82,69 +126,67 @@ const Products = () => {
           <h1 className="text-3xl text-black font-semibold mr-5">
             {category?.title}
           </h1>
-          <div className="text-right flex items-center">
-            <div className="relative">
+          <div ref={dropListRef} className="text-right flex items-center">
+            <div onClick={toggle} className="relative">
               <span className="word-sort">Сортувати: </span>
-              <span
-                onClick={togglePopup}
-                className="text-black cursor-pointer sort-filter"
-              >
+              <span className="text-black cursor-pointer sort-filter">
                 по популярності
               </span>
-              <div
-                ref={popupRef}
-                style={{ display: isVisible ? "block" : "none" }}
-                className="sort-filter-list-popup"
-              >
-                <ul>
-                  <li>
-                    <a
-                      href={`/${citySlug}/products/${categorySlug}/?sort=popular`}
-                      onClick={(e) => handleFilterChange(e, "popular")}
-                    >
-                      по популярності
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href={`/${citySlug}/products/${categorySlug}/?sort=newest`}
-                      onClick={(e) => handleFilterChange(e, "newest")}
-                    >
-                      по новизні
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href={`/${citySlug}/products/${categorySlug}/?sort=price_desc`}
-                      onClick={(e) => handleFilterChange(e, "price_desc")}
-                    >
-                      за зменшенням ціни
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href={`/${citySlug}/products/${categorySlug}/?sort=price_asc`}
-                      onClick={(e) => handleFilterChange(e, "price_asc")}
-                    >
-                      за зростанням ціни
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href={`/${citySlug}/products/${categorySlug}/?sort=alphabetical`}
-                      onClick={(e) => handleFilterChange(e, "alphabetical")}
-                    >
-                      за алфавітом
-                    </a>
-                  </li>
-                </ul>
-              </div>
+              {isToggled && (
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  className="sort-filter-list-popup"
+                >
+                  <ul>
+                    <li>
+                      <a
+                        href={`/${citySlug}/products/${categorySlug}/?sort=popular`}
+                        onClick={(e) => handleFilterChange(e, "popular")}
+                      >
+                        по популярності
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href={`/${citySlug}/products/${categorySlug}/?sort=newest`}
+                        onClick={(e) => handleFilterChange(e, "newest")}
+                      >
+                        по новизні
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href={`/${citySlug}/products/${categorySlug}/?sort=price_desc`}
+                        onClick={(e) => handleFilterChange(e, "price_desc")}
+                      >
+                        за зменшенням ціни
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href={`/${citySlug}/products/${categorySlug}/?sort=price_asc`}
+                        onClick={(e) => handleFilterChange(e, "price_asc")}
+                      >
+                        за зростанням ціни
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href={`/${citySlug}/products/${categorySlug}/?sort=alphabetical`}
+                        onClick={(e) => handleFilterChange(e, "alphabetical")}
+                      >
+                        за алфавітом
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         </section>
         <section className="catalog-products">
           <div className="products-list">
-            {products.map((product) => (
+            {products.map((product: Product) => (
               <div key={product.id} className="product-item">
                 <a
                   onClick={(e) => handleProductDetail(e, product)}
@@ -169,22 +211,26 @@ const Products = () => {
                   </div>
                   <div className="product-description">{`${product.description}`}</div>
                   <div className="product-additional">
-                    {product.topping.map((topping) => (
+                    {product.topping.map((topping: Topping, index) => (
                       <label key={topping.id}>
                         <input
                           type="checkbox"
-                          checked={
-                            checkedToppings[product.id]?.[topping.id] || false
-                          }
-                          onChange={() =>
-                            handleCheckboxChange(product.id, topping.id)
+                          id={`topping-${index}`}
+                          onChange={(e) =>
+                            handleToppingChange(
+                              e,
+                              product.id,
+                              topping,
+                              сartToppingItems,
+                              handleAddItemToppingToCart,
+                              handleIncreaseToppingQuantity,
+                              handleDecreaseToppingQuantity
+                            )
                           }
                         />
-                        <span
-                          className={`product-additional-name ${
-                            checkedToppings[topping.id] ? "checked" : ""
-                          }`}
-                        >{`${topping.title}`}</span>
+                        <span className="product-additional-name">
+                          {topping.title}
+                        </span>
                         <span className="product-additional-price">{`+${topping.price} грн`}</span>
                       </label>
                     ))}
@@ -195,9 +241,54 @@ const Products = () => {
                     </div>
                   </div>
                   <div className="price-cart">
-                    <div className="price-btn">
-                      <span className="block px-0 py-1">В кошик</span>
-                    </div>
+                    {!productItem(product)?.quantity ? (
+                      <div style={{ height: "52px" }} className="price-btn">
+                        <span
+                          onClick={() => product && handleAddToCart(product)}
+                          className="block px-0 py-1"
+                        >
+                          Замовити
+                        </span>
+                      </div>
+                    ) : (
+                      <div
+                        style={{ backgroundColor: "#8c9f3f", color: "#fff" }}
+                        className="price-btn"
+                      >
+                        <div className="button-active">
+                          <Minus
+                            onClick={() => {
+                              const item = productItem(product);
+                              if (item && item.quantity > 1) {
+                                handleDecreaseQuantity(item.id);
+                              }
+                            }}
+                            className={`${
+                              productItem(product)?.quantity &&
+                              productItem(product)!.quantity > 1
+                                ? "hover:opacity-70"
+                                : ""
+                            }`}
+                            height={30}
+                            width={30}
+                          />
+                          <input
+                            disabled
+                            value={productItem(product)?.quantity}
+                            type="text"
+                          />
+                          <Plus
+                            onClick={() => {
+                              const item = productItem(product);
+                              item && handleIncreaseQuantity(item.id);
+                            }}
+                            className="hover:opacity-70"
+                            height={30}
+                            width={30}
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

@@ -1,17 +1,35 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CityList from "./CityList";
 import RestaurantList from "./RestaurantList";
 import ContactList from "./ContactsList";
-import { Menu, ShoppingBasket, X } from "lucide-react";
+import { Menu, Minus, Plus, ShoppingBasket, X } from "lucide-react";
 import { useGetCategoriesQuery } from "../apiSlice";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store";
 import { setCityName, setCitySlug } from "../citySlice";
+import {
+  decreaseItemQuantity,
+  decreaseToppingItemQuantity,
+  increaseItemQuantity,
+  increaseToppingItemQuantity,
+  removeItemFromCart,
+  removeToppingItemFromCart,
+  selectCartQuantity,
+  selectCartToppingItems,
+  selectCartTotalPrice,
+  Topping,
+} from "../cartSlice";
 
 const Navbar = () => {
   const dispatch: AppDispatch = useDispatch();
+  const cartQuantity = useSelector(selectCartQuantity);
+  const cartTotalPrice = useSelector(selectCartTotalPrice);
+  const cartToppingItems = useSelector(selectCartToppingItems);
+  const cartItems = useSelector((state: RootState) => state.cart.items);
+  const [isToggled, setIsToggled] = useState(false);
+  const [isCartVisible, setIsCartVisible] = useState(false);
   const cityName = useSelector((state: RootState) => state.city.cityName);
   const citySlug = useSelector((state: RootState) => state.city.citySlug);
   const [isOpen, setIsOpen] = useState(false);
@@ -34,6 +52,81 @@ const Navbar = () => {
     navigate(`/${slug}`);
   };
 
+  const toggle = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+
+    if (!isToggled && cartQuantity > 0) {
+      setIsToggled(true);
+      document.body.style.overflowY = "hidden";
+      setTimeout(() => {
+        setIsCartVisible(true);
+      }, 100);
+    } else {
+      setIsCartVisible(false);
+
+      setTimeout(() => {
+        setIsToggled(false);
+        document.body.style.overflowY = "auto";
+      }, 300);
+    }
+  };
+
+  useEffect(() => {
+    if (cartQuantity === 0) {
+      setIsCartVisible(false);
+
+      setTimeout(() => {
+        setIsToggled(false);
+        document.body.style.overflowY = "auto";
+      }, 300);
+    }
+  }, [cartQuantity]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const cartContainer = document.querySelector(".cart-container");
+  
+      if (cartContainer && !cartContainer.contains(event.target as Node)) {
+        setIsCartVisible(false);
+        setTimeout(() => {
+          setIsToggled(false);
+          document.body.style.overflowY = "auto";
+        }, 300);
+      }
+    };
+  
+    if (isCartVisible) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+  
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isCartVisible]);
+
+  const handleRemoveFromCart = (itemId: number) => {
+    dispatch(removeItemFromCart(itemId));
+  };
+
+  const handleIncreaseQuantity = (itemId: number) => {
+    dispatch(increaseItemQuantity(itemId));
+  };
+
+  const handleDecreaseQuantity = (itemId: number) => {
+    dispatch(decreaseItemQuantity(itemId));
+  };
+
+  const handleIncreaseToppingQuantity = ( toppingId: number) => {
+    dispatch(increaseToppingItemQuantity(toppingId));
+  };
+
+  const handleDecreaseToppingQuantity = ( toppingId: number) => {
+    dispatch(decreaseToppingItemQuantity(toppingId));
+  };
+
+  const handleRemoveToppingFromCart = ( toppingId: number) => {
+    dispatch(removeToppingItemFromCart(toppingId));
+  };
   return (
     <>
       <header
@@ -72,10 +165,17 @@ const Navbar = () => {
               </a>
             </div>
             <div className="shopping-cart ml-2 sm:ml-7">
-              <a className="cart-toggle flex sm:flex relative" href="#">
-                  <span data-cart="0" className="relative shopping-cart-icon">
-                    <ShoppingBasket />
-                  </span>
+              <a
+                onClick={toggle}
+                className="cart-toggle flex sm:flex relative"
+                href=""
+              >
+                <span
+                  data-cart={cartQuantity}
+                  className="relative shopping-cart-icon"
+                >
+                  <ShoppingBasket />
+                </span>
                 <span className="pl-2 hidden sm:inline-block">Кошик</span>
               </a>
             </div>
@@ -126,6 +226,98 @@ const Navbar = () => {
             </li>
           ))}
         </ul>
+      </div>
+      <div className={`pop-cart ${isToggled ? "block" : "none"}`}>
+        <div
+          className={`cart-container ${
+            isCartVisible ? "active-transform" : ""
+          }`}
+        >
+          <div className="title">Кошик</div>
+          <div className="cart-item-list">
+            {cartItems.map((item) => (
+              <div key={item.id} className="cart-item">
+                <div className="img">
+                  <img src={item.image} alt={item.title} />
+                </div>
+                <div className="description">
+                  <div className="item-title">{item.title}</div>
+                  <div className="item-count">
+                    <div className="spinner">
+                      <Minus
+                        onClick={() =>
+                          item.quantity > 1 && handleDecreaseQuantity(item.id)
+                        }
+                        className={`${
+                          item.quantity > 1 ? "text-red-500" : "text-gray-500"
+                        } ${
+                          item.quantity > 1
+                            ? "cursor-pointer"
+                            : "cursor-default"
+                        }`}
+                      />
+                      <input disabled value={item.quantity} type="text" />
+                      <Plus
+                        onClick={() => handleIncreaseQuantity(item.id)}
+                        className="cursor-pointer text-green-500"
+                      />
+                    </div>
+                  </div>
+                  <div className="item-price">{item.price * item.quantity} грн</div>
+                </div>
+                <div onClick={() => handleRemoveFromCart(item.id)}>
+                  <X className="cursor-pointer text-red-500" />
+                </div>
+              </div>
+            ))}
+            {cartToppingItems?.map((topping: Topping, index) => (
+              <div key={topping.id + index} className="cart-item">
+                <div className="img">
+                  <img src="" />
+                </div>
+                <div className="description">
+                  <div className="item-title">{topping.title}</div>
+                  <div className="item-count">
+                    <div className="spinner">
+                      <Minus
+                        onClick={() =>
+                          topping.quantity > 1 &&
+                          handleDecreaseToppingQuantity(topping.id)
+                        }
+                        className={`${
+                          topping.quantity > 1
+                            ? "text-red-500"
+                            : "text-gray-500"
+                        } ${
+                          topping.quantity > 1
+                            ? "cursor-pointer"
+                            : "cursor-default"
+                        }`}
+                      />
+                      <input disabled value={topping.quantity} type="text" />
+                      <Plus
+                        onClick={() => handleIncreaseToppingQuantity(topping.id)}
+                        className="cursor-pointer text-green-500"
+                      />
+                    </div>
+                  </div>
+                  <div className="item-price">
+                    {topping.price * topping.quantity} грн
+                  </div>
+                </div>
+                <div onClick={() => handleRemoveToppingFromCart(topping.id)}>
+                  <X className="cursor-pointer text-red-500" />
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="popup-summary">
+            <div className="full-price">
+              <span>Сума</span>
+              <span>{cartTotalPrice} грн</span>
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );

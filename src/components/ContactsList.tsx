@@ -29,7 +29,7 @@ const ContactList = () => {
         <Phone className="block lg:hidden" color="white" />
       </span>
       {isToggled && (
-        <div style={{ padding: "20px" }} className="drop-list-content">
+        <div style={{ padding: "20px" }} className="drop-list-content contacts">
           <div className="drop-list-content-scroll">
             <div className="text-lg text-zinc-600 font-semibold">
               Служба доставки

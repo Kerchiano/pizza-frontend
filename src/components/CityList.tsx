@@ -1,4 +1,4 @@
-import { useGetItemsQuery } from "../apiSlice";
+import { useGetCitiesQuery } from "../apiSlice";
 import useToggle from "./hooks/useToggle";
 import useClickOutside from "./hooks/useClickOutside";
 import { MapPin } from "lucide-react";
@@ -9,7 +9,7 @@ interface ICityList {
 }
 
 const CityList = ({ city, newCity }: ICityList) => {
-  const { data = [] } = useGetItemsQuery();
+  const { data = [] } = useGetCitiesQuery();
   const { isToggled, toggle, setFalse } = useToggle();
   const dropListRef = useClickOutside(() => setFalse());
   const handleClick = (
