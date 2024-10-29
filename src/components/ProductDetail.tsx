@@ -100,16 +100,30 @@ const ProductDetail = () => {
                   </div>
                 </div>
                 <div className="mobile-supplements-content">
-                  {product?.topping.map((toppingItem) => (
+                  {product?.topping.map((topping) => (
                     <label
-                      key={`${toppingItem.id}`}
+                      key={`${topping.id}`}
                       className="mobile-supplements-item"
                     >
-                      <input type="checkbox" />
-                      <span className="mobile-supplements-item-name">{`${toppingItem.title}`}</span>
+                      <input
+                        className="hidden"
+                        type="checkbox"
+                        onChange={(e) =>
+                          handleToppingChange(
+                            e,
+                            product.id,
+                            topping,
+                            сartToppingItems,
+                            handleAddItemToppingToCart,
+                            handleIncreaseToppingQuantity,
+                            handleDecreaseToppingQuantity
+                          )
+                        }
+                      />
+                      <span className="mobile-supplements-item-name">{`${topping.title}`}</span>
                       <span className="mobile-supplements-item-price">
                         <span className="without_price">Без</span>
-                        <span className="with_price">{`+${toppingItem.price} грн`}</span>
+                        <span className="with_price">{`+${topping.price} грн`}</span>
                       </span>
                     </label>
                   ))}

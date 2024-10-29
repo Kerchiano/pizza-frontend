@@ -104,5 +104,5 @@ export const {
   useGetImagesQuery,
   useGetProductsQuery,
   useGetProductQuery,
-  useGetRestaurantByRestaurantSlugQuery
+  useGetRestaurantByRestaurantSlugQuery,
 } = apiSlice;

@@ -39,6 +39,9 @@ const Products = () => {
   });
   const { isToggled, toggle, setFalse } = useToggle();
   const dropListRef = useClickOutside(() => setFalse());
+  const categoryDescription = categories.find(
+    (category) => category.slug === categorySlug
+  )?.description;
 
   const navigate = useNavigate();
 
@@ -295,11 +298,11 @@ const Products = () => {
             ))}
           </div>
         </section>
-        <section className="seo-block-products">
-          <p>{`${
-            categories.find((category) => category === category)?.description
-          }`}</p>
-        </section>
+        {categoryDescription && (
+          <section className="seo-block-products">
+            <p>{`${categoryDescription}`}</p>
+          </section>
+        )}
       </main>
     </>
   );

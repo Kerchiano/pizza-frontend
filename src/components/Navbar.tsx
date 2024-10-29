@@ -21,6 +21,8 @@ import {
   selectCartTotalPrice,
   Topping,
 } from "../cartSlice";
+import { selectIsAuthenticated } from "../authSlice";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -36,6 +38,7 @@ const Navbar = () => {
   const { data = [] } = useGetCategoriesQuery();
   const navigate = useNavigate();
 
+  const isAuthenticated = useSelector(selectIsAuthenticated);
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
@@ -85,7 +88,7 @@ const Navbar = () => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const cartContainer = document.querySelector(".cart-container");
-  
+
       if (cartContainer && !cartContainer.contains(event.target as Node)) {
         setIsCartVisible(false);
         setTimeout(() => {
@@ -94,11 +97,11 @@ const Navbar = () => {
         }, 300);
       }
     };
-  
+
     if (isCartVisible) {
       document.addEventListener("mousedown", handleClickOutside);
     }
-  
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -116,17 +119,18 @@ const Navbar = () => {
     dispatch(decreaseItemQuantity(itemId));
   };
 
-  const handleIncreaseToppingQuantity = ( toppingId: number) => {
+  const handleIncreaseToppingQuantity = (toppingId: number) => {
     dispatch(increaseToppingItemQuantity(toppingId));
   };
 
-  const handleDecreaseToppingQuantity = ( toppingId: number) => {
+  const handleDecreaseToppingQuantity = (toppingId: number) => {
     dispatch(decreaseToppingItemQuantity(toppingId));
   };
 
-  const handleRemoveToppingFromCart = ( toppingId: number) => {
+  const handleRemoveToppingFromCart = (toppingId: number) => {
     dispatch(removeToppingItemFromCart(toppingId));
   };
+
   return (
     <>
       <header
@@ -153,16 +157,24 @@ const Navbar = () => {
           </div>
           <div className="w-auto flex justify-end items-center lg:w-1/2">
             <div className="user-cabinet ml-8 hidden sm:block lg:block">
-              <a href="#">
-                <span className="text-white hover:text-gray-400 font-medium cursor-pointer hidden lg:block">
-                  Кабінет
-                </span>
-                <img
-                  className="min-w-10 h-10 block lg:hidden"
-                  src="https://raw.githubusercontent.com/Kerchiano/storage-photos/refs/heads/main/pizza_photos/mafia_logo.jpg"
-                  alt=""
-                />
-              </a>
+              {isAuthenticated ? (
+                <Link to="/profile/personal_data">
+                  <span className="text-white hover:text-gray-400 font-medium cursor-pointer hidden lg:block">
+                    Кабінет
+                  </span>
+                </Link>
+              ) : (
+                <Link to="/login">
+                  <span className="text-white hover:text-gray-400 font-medium cursor-pointer hidden lg:block">
+                    Вхід
+                  </span>
+                </Link>
+              )}
+              <img
+                className="min-w-10 h-10 block lg:hidden"
+                src="https://raw.githubusercontent.com/Kerchiano/storage-photos/refs/heads/main/pizza_photos/mafia_logo.jpg"
+                alt=""
+              />
             </div>
             <div className="shopping-cart ml-2 sm:ml-7">
               <a
@@ -195,11 +207,19 @@ const Navbar = () => {
       <div className={`hamburger-menu ${isOpen ? "open" : "closed"}`}>
         <div className="wrapper-hamburger-menu-top hover:text-transparent">
           <div className="user-cabinet ml-8 flex justify-center">
-            <a href="#" className="inline-block">
-              <span className="text-black font-medium cursor-pointer block sm:hidden">
-                Кабінет
-              </span>
-            </a>
+            {isAuthenticated ? (
+              <Link to="/profile/personal_data" className="inline-block">
+                <span className="text-black font-medium cursor-pointer block sm:hidden">
+                  Кабінет
+                </span>
+              </Link>
+            ) : (
+              <Link to="/login" className="inline-block">
+                <span className="text-black font-medium cursor-pointer block sm:hidden">
+                  Вхід
+                </span>
+              </Link>
+            )}
             <div className="inline-block rs-list sm:hidden">
               <RestaurantList citySlug={citySlug} />
             </div>
@@ -263,7 +283,9 @@ const Navbar = () => {
                       />
                     </div>
                   </div>
-                  <div className="item-price">{item.price * item.quantity} грн</div>
+                  <div className="item-price">
+                    {item.price * item.quantity} грн
+                  </div>
                 </div>
                 <div onClick={() => handleRemoveFromCart(item.id)}>
                   <X className="cursor-pointer text-red-500" />
@@ -296,7 +318,9 @@ const Navbar = () => {
                       />
                       <input disabled value={topping.quantity} type="text" />
                       <Plus
-                        onClick={() => handleIncreaseToppingQuantity(topping.id)}
+                        onClick={() =>
+                          handleIncreaseToppingQuantity(topping.id)
+                        }
                         className="cursor-pointer text-green-500"
                       />
                     </div>

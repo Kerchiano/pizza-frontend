@@ -26,7 +26,6 @@ a {
 body {
   width: 100%;
   display: flex;
-  min-width: 320px;
   flex-direction: column;
   margin: 0;
   min-width: 320px;
@@ -1593,4 +1592,469 @@ header {
   color: #000;
   font-size: 24px;
   line-height: 24px;
+}
+
+.registration-form,
+.login-form {
+  padding: 30px;
+  background-color: white;
+}
+
+.registration-form input,
+.login-form input,
+.personad-data-form input,
+#gender {
+  width: 100%;
+  padding: 0 20px;
+  border-radius: 3px;
+  height: 50px;
+  line-height: 48px;
+  color: #000;
+  font-size: 16px;
+}
+
+.registration-form button,
+.login-form button,
+.personad-data-form button {
+  margin: auto;
+  background: #8c9f3f;
+  color: #fff;
+  font-size: 16px;
+  padding: 15px 30px;
+  text-decoration: none;
+  border-radius: 3px;
+  border: none;
+  text-align: center;
+  display: block;
+  width: 70%;
+  margin-top: 20px;
+  transition: all 0.3s ease;
+}
+
+.personad-data-form button {
+  width: 100%;
+  margin: 20px auto 0;
+  max-width: 260px;
+}
+
+.personad-data-form button:hover,
+.registration-form button:hover,
+.login-form button:hover {
+  background: #91b306;
+}
+
+.personal-data-form {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.profile-container {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 900px;
+}
+
+.profile-container h1 {
+  font-size: 2em;
+  margin: 0.67em 0;
+  font-weight: 700;
+}
+
+.profile-tabs {
+  background: #fff;
+  border: 1px solid #eee9e3;
+  padding: 0 30px;
+  display: flex;
+  position: relative;
+}
+
+.tab {
+  height: 75px;
+  line-height: 75px;
+  display: block;
+  font-size: 16px;
+  color: #000;
+  text-decoration: none;
+  position: relative;
+  margin-right: 35px;
+  background: 0 0;
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
+
+.user-logout {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 16px;
+  padding: 0 5px;
+  text-decoration: none;
+  text-transform: capitalize;
+  border-radius: 3px;
+  border: none;
+  text-align: center;
+  height: 75px;
+  line-height: 75px;
+  display: block;
+  color: #000;
+  margin-right: 35px;
+  background-color: transparent;
+}
+
+.data-container {
+  padding: 30px;
+  background: #fff;
+  border: 1px solid #eee9e3;
+  border-top: none;
+  padding-bottom: 15px;
+}
+
+.personad-data-form input:disabled {
+  border: none;
+  background-color: transparent;
+  font-weight: 600;
+}
+
+.personad-data-form input[name="phone_number"] {
+  padding: 0;
+}
+
+.personad-data-form div {
+  width: calc(50% - 20px);
+  margin-bottom: 30px;
+}
+
+.form-title {
+  width: 100%;
+  font-size: 18px;
+  line-height: 24px;
+  color: #000;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+@media (max-width: 567px) {
+  .personad-data-form div {
+    width: 100%;
+    margin: 20px 0 0;
+    font-size: 14px;
+  }
+
+  .personad-data-form {
+    display: block;
+  }
+
+  .form-title {
+    text-transform: none;
+  }
+}
+
+@media (max-width: 427px) {
+  .user-logout {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 16px;
+    top: auto;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    margin: 15px 10px 0;
+    padding: 0;
+    height: auto;
+    line-height: 1;
+  }
+  .tab {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 16px;
+    top: auto;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    margin: 15px 10px 0;
+    padding: 0;
+    height: auto;
+    line-height: 1;
+  }
+
+  .profile-tabs {
+    display: block;
+    padding: 15px 0;
+    text-align: center;
+  }
+}
+
+.success-mesage {
+  display: block;
+  width: 100%;
+  font-size: 14px;
+  line-height: 1.2;
+  color: #91b306;
+  margin-bottom: 0 !important;
+}
+
+.delivery-addresses {
+  margin-top: 30px;
+}
+
+.delivery-addresses > .title {
+  width: 100%;
+  font-size: 18px;
+  line-height: 24px;
+  color: #000;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.list-delivery-address {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.address-item {
+  border-top: none;
+  padding: 20px 0 20px 50px;
+  padding-left: 0;
+  display: flex;
+  width: 100%;
+}
+
+.address-item .title {
+  line-height: 18px;
+  color: #000;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.address-item .value {
+  line-height: 24px;
+  color: #000;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.remove-item {
+  width: 25px;
+  height: 25px;
+  background: url("https://raw.githubusercontent.com/Kerchiano/storage-photos/refs/heads/main/pizza_photos/remove-item.png")
+    0 0 no-repeat;
+  opacity: 0.6;
+  text-decoration: none;
+  display: block;
+  cursor: pointer;
+}
+
+.add-delivery-address {
+  padding: 15px;
+  margin: 0 -15px;
+  background: #eee9e3;
+  border-radius: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.add-delivery-address .title {
+  width: 100%;
+  font-size: 18px;
+  line-height: 24px;
+  color: #000;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.new-address {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.add-delivery-address {
+  padding: 15px;
+  margin: 0 -15px;
+  background: #eee9e3;
+  border-radius: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.city-field,
+.house_number-field {
+  width: calc(15% - 20px);
+  margin-bottom: 20px;
+}
+
+.street-field {
+  width: calc(45% - 20px);
+  margin-bottom: 20px;
+}
+
+.floor-field,
+.entrance-field,
+.flat-field {
+  width: calc(10% - 20px);
+  margin-bottom: 20px;
+}
+
+.add-delivery-address input {
+  width: 100%;
+  border: 1px solid #eee9e3;
+  padding: 0 20px;
+  border-radius: 3px;
+  height: 50px;
+  line-height: 48px;
+  color: #000;
+  font-size: 16px;
+}
+
+.add-delivery-address button {
+  background: #8c9f3f;
+  color: #fff;
+  font-size: 14px;
+  padding: 15px 30px;
+  text-decoration: none;
+  border-radius: 3px;
+  border: none;
+  text-align: center;
+  display: block;
+  width: calc(25% - 20px);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.add-delivery-address button:hover {
+  background: #91b306;
+}
+
+.add-delivery-address select {
+  padding: 0px 20px;
+  text-indent: 0px;
+  border-radius: 3px;
+  width: 100%;
+  height: 50px;
+  font-size: 14px;
+  line-height: 48px;
+  font-family: Museo, sans-serif;
+  color: #000000;
+  border: 1px solid #eee9e3;
+}
+
+@media (max-width: 840px) {
+  .delivery-addresses > .title {
+    text-transform: none;
+  }
+}
+
+@media (max-width: 735px) {
+  .add-delivery-address {
+    padding: 20px;
+    margin: 0;
+  }
+
+  .city-field,
+  .house_number-field {
+    width: calc(15% - 10px);
+  }
+
+  .floor-field,
+  .entrance-field,
+  .flat-field {
+    width: calc(10% - 10px);
+  }
+
+  .street-field {
+    width: calc(45% - 10px);
+  }
+
+  .add-delivery-address button {
+    width: auto;
+  }
+
+  .city-field select {
+    padding: 0 0 0 10px;
+  }
+}
+
+@media (max-width: 567px) {
+  .add-delivery-address {
+    margin-top: 10px;
+    display: block;
+  }
+
+  .new-address {
+    font-size: 0;
+    display: block;
+  }
+
+  .city-field,
+  .street-field {
+    width: 100%;
+    margin: 20px 0 0;
+    font-size: 14px;
+  }
+
+  .house_number-field,
+  .floor-field,
+  .entrance-field,
+  .flat-field {
+    display: inline-block;
+    vertical-align: top;
+    width: calc(50% - 5px);
+  }
+
+  .house_number-field,
+  .entrance-field {
+    margin-right: 10px;
+  }
+
+  .add-delivery-address button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .address-item {
+    position: relative;
+    flex-wrap: wrap;
+  }
+
+  .street-block,
+  .entrance-block,
+  .house_number-block,
+  .flat-block,
+  .city-block,
+  .floor-block {
+    margin-bottom: 5px;
+    margin-right: 5px;
+  }
+
+  .street-block,
+  .entrance-block {
+    flex: 1 1 40%;
+  }
+
+  .house_number-block,
+  .flat-block {
+    flex: 1 1 30%;
+  }
+
+  .city-block,
+  .floor-block {
+    flex: 1 1 20%;
+  }
+
+  .block-remove-item {
+    position: absolute;
+    right: -30px;
+  }
 }
