@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 export interface User {
+  id: number;
   first_name: string;
   phone_number: string;
   email: string;
@@ -21,10 +22,6 @@ export interface UserAddresses {
   entrance: number;
   flat: number;
 }
-
-// export interface AddressWithUser extends Address {
-//   user: string;
-// }
 
 type UserWithoutPhone = Omit<User, "phone_number">;
 
@@ -138,5 +135,5 @@ export const {
   useChangeUserDetailsMutation,
   useGetUserAddressesQuery,
   useAddAddressMutation,
-  useRemoveAddressMutation
+  useRemoveAddressMutation,
 } = authApi;

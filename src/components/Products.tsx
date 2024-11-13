@@ -16,6 +16,7 @@ import {
   decreaseToppingItemQuantity,
   increaseItemQuantity,
   increaseToppingItemQuantity,
+  selectCartItems,
   selectCartToppingItems,
   Topping,
 } from "../cartSlice";
@@ -24,7 +25,7 @@ import { Minus, Plus } from "lucide-react";
 
 const Products = () => {
   const { categorySlug } = useParams<{ categorySlug: string }>();
-  const cartItems = useSelector((state: RootState) => state.cart.items);
+  const cartItems = useSelector(selectCartItems);
   const сartToppingItems = useSelector(selectCartToppingItems);
   const dispatch = useDispatch();
   const { citySlug } = useParams<{ citySlug: string }>();
@@ -72,6 +73,7 @@ const Products = () => {
       id: item.id,
       title: item.title,
       price: item.price,
+      slug: item.slug,
       quantity: 1,
       image: item.image,
       options: item.topping,

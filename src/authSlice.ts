@@ -33,7 +33,7 @@ const authSlice = createSlice({
       state.accessToken = null;
       state.isAuthenticated = false;
       setLocalStorage(false);
-      localStorage.removeItem('refresh');
+      localStorage.removeItem("refresh");
     },
     setAccessToken: (state, action: PayloadAction<string>) => {
       state.accessToken = action.payload;

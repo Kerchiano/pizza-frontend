@@ -50,7 +50,7 @@ const AddAddress = ({user, onAddAddress }: IAddAddress) => {
         floor: "",
         entrance: "",
         flat: "",
-        city: "",
+        city: "K",
       }}
       enableReinitialize
       validationSchema={validationSchema}
@@ -82,7 +82,7 @@ const AddAddress = ({user, onAddAddress }: IAddAddress) => {
                 onChange={handleChange}
                 className="input-with-error-style border cursor-pointer"
               >
-                <option value="К">Київ</option>
+                <option value="K">Київ</option>
                 <option value="Kh">Харків</option>
                 <option value="D">Дніпро</option>
                 <option value="M">Миколаїв</option>

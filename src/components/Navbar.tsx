@@ -16,6 +16,7 @@ import {
   increaseToppingItemQuantity,
   removeItemFromCart,
   removeToppingItemFromCart,
+  selectCartItems,
   selectCartQuantity,
   selectCartToppingItems,
   selectCartTotalPrice,
@@ -29,7 +30,7 @@ const Navbar = () => {
   const cartQuantity = useSelector(selectCartQuantity);
   const cartTotalPrice = useSelector(selectCartTotalPrice);
   const cartToppingItems = useSelector(selectCartToppingItems);
-  const cartItems = useSelector((state: RootState) => state.cart.items);
+  const cartItems = useSelector(selectCartItems);
   const [isToggled, setIsToggled] = useState(false);
   const [isCartVisible, setIsCartVisible] = useState(false);
   const cityName = useSelector((state: RootState) => state.city.cityName);
@@ -55,7 +56,10 @@ const Navbar = () => {
     navigate(`/${slug}`);
   };
 
-  const toggle = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const toggle = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    shouldNavigate = false
+  ) => {
     e.preventDefault();
 
     if (!isToggled && cartQuantity > 0) {
@@ -70,6 +74,9 @@ const Navbar = () => {
       setTimeout(() => {
         setIsToggled(false);
         document.body.style.overflowY = "auto";
+        if (shouldNavigate) {
+          navigate("/checkout");
+        }
       }, 300);
     }
   };
@@ -292,8 +299,8 @@ const Navbar = () => {
                 </div>
               </div>
             ))}
-            {cartToppingItems?.map((topping: Topping, index) => (
-              <div key={topping.id + index} className="cart-item">
+            {cartToppingItems?.map((topping: Topping) => (
+              <div key={topping.id} className="cart-item">
                 <div className="img">
                   <img src="" />
                 </div>
@@ -340,6 +347,9 @@ const Navbar = () => {
               <span>Сума</span>
               <span>{cartTotalPrice} грн</span>
             </div>
+            <Link onClick={(e) => toggle(e, true)} className="checkout-link" to={"/checkout"}>
+              Оформити
+            </Link>
           </div>
         </div>
       </div>

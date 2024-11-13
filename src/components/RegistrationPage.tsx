@@ -1,9 +1,14 @@
 import { Link } from "react-router-dom";
 import RegistrationForm from "./auth/RegistrationForm";
+import { useSelector } from "react-redux";
+import { selectIsAuthenticated } from "../authSlice";
+import ErrorPage from "./ErrorPage";
 
 const RegistrationPage = () => {
-  return (
-    <main className="pl-20 mt-25 lg:mt-20 mb-5 flex w-full flex-col flex-1 bg-gray-100">
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+
+  return !isAuthenticated ? (
+    <main className="pl-20 mt-25 lg:mt-20 flex w-full flex-col flex-1 bg-gray-100">
       <section className="p-[10px] mt-[20px] mb-[20px] lg:p-[60px] lg:pt-[0]">
         <div className="m-auto max-w-[500px]">
           <div className="flex justify-center pt-5 pb-5">
@@ -24,6 +29,8 @@ const RegistrationPage = () => {
         </div>
       </section>
     </main>
+  ) : (
+    <ErrorPage />
   );
 };
 

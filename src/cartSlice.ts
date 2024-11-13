@@ -11,6 +11,7 @@ export interface CartItem {
   id: number;
   title: string;
   image: string;
+  slug: string;
   price: number;
   quantity: number;
   options?: Topping[];
@@ -141,9 +142,26 @@ const cartSlice = createSlice({
       const existingItem = state.items.find((item) => item.id === itemId);
 
       if (existingItem && existingItem.quantity > 1) {
+        const totalMainItemsQuantity = state.items.reduce(
+          (total, item) => total + item.quantity,
+          0
+        );
+
         existingItem.quantity -= 1;
         state.totalQuantity -= 1;
         state.totalPrice -= existingItem.price;
+
+        state.toppingItems.forEach((topping) => {
+          if (topping.quantity > totalMainItemsQuantity - 1) {
+            const decreaseAmount =
+              topping.quantity - (totalMainItemsQuantity - 1);
+            topping.quantity -= decreaseAmount;
+
+            state.totalQuantity -= decreaseAmount;
+            state.totalPrice -= topping.price * decreaseAmount;
+          }
+        });
+
         saveCartToLocalStorage(state);
       }
     },
@@ -164,16 +182,24 @@ const cartSlice = createSlice({
           if (topping.quantity > itemQuantity) {
             topping.quantity -= itemQuantity;
             state.totalPrice -= topping.price * itemQuantity;
-            state.totalQuantity -= itemQuantity
+            state.totalQuantity -= itemQuantity;
           } else {
             state.totalPrice -= topping.price * topping.quantity;
             topping.quantity = 0;
-            state.totalQuantity -= itemQuantity
-            state.toppingItems = []
+            state.totalQuantity -= itemQuantity;
+            state.toppingItems = [];
           }
         });
         saveCartToLocalStorage(state);
       }
+    },
+
+    clearCart: (state) => {
+      state.items = [];
+      state.toppingItems = [];
+      state.totalQuantity = 0;
+      state.totalPrice = 0;
+      localStorage.removeItem("cart");
     },
   },
 });
@@ -187,6 +213,8 @@ export const selectCartTotalPrice = (state: { cart: CartState }) =>
 export const selectCartToppingItems = (state: { cart: CartState }) =>
   state.cart.toppingItems;
 
+export const selectCartItems = (state: { cart: CartState }) => state.cart.items;
+
 export const selectTotalItemsQuantity = (state: { cart: CartState }) =>
   state.cart.items.reduce((total, item) => total + item.quantity, 0);
 
@@ -199,5 +227,6 @@ export const {
   increaseToppingItemQuantity,
   decreaseToppingItemQuantity,
   removeToppingItemFromCart,
+  clearCart,
 } = cartSlice.actions;
 export default cartSlice.reducer;

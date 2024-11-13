@@ -4,7 +4,7 @@ import { useState } from "react";
 import * as Yup from "yup";
 import Modal from "react-modal";
 import { X, CircleCheck } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface RegisterErrorResponse {
   status: number;
@@ -31,12 +31,15 @@ const transformErrors = (err: RegisterErrorResponse) => {
 const RegistrationForm = () => {
   const [register] = useRegisterMutation();
   const navigate = useNavigate();
+  const location = useLocation();
   const [modalIsOpen, setModalIsOpen] = useState(false);
 
   const openModal = () => setModalIsOpen(true);
   const closeModal = () => {
     setModalIsOpen(false);
-    navigate("/login")
+    const params = new URLSearchParams(location.search);
+    const redirectPath = params.get('redirect') ? `/login?redirect=/checkout`  : '/login';
+    navigate(redirectPath)
   };
 
   const validationSchema = Yup.object({

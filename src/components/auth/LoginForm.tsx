@@ -3,7 +3,7 @@ import { Formik, Form, useField } from "formik";
 import * as Yup from "yup";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../../authSlice";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface LoginErrorResponse {
   status: number;
@@ -31,6 +31,7 @@ const LoginForm = () => {
   const dispatch = useDispatch();
   const [login] = useLoginMutation();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const validationSchema = Yup.object({
     email: Yup.string()
@@ -81,7 +82,11 @@ const LoginForm = () => {
           const user = await login(values).unwrap();
           dispatch(setCredentials({ accessToken: user.access }));
           localStorage.setItem("refresh", user.refresh);
-          navigate("/profile/personal_data");
+
+          const params = new URLSearchParams(location.search);
+          const redirectPath =
+            params.get("redirect") || "/profile/personal_data";
+          navigate(redirectPath);
         } catch (err: unknown) {
           console.error("Failed to login: ", err);
 

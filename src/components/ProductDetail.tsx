@@ -8,6 +8,7 @@ import {
   decreaseToppingItemQuantity,
   increaseItemQuantity,
   increaseToppingItemQuantity,
+  selectCartItems,
   selectCartToppingItems,
   Topping,
 } from "../cartSlice";
@@ -19,7 +20,7 @@ const ProductDetail = () => {
   const { productSlug } = useParams<{ productSlug: string }>();
   const { data: product } = useGetProductQuery(productSlug || "");
   const dispatch = useDispatch();
-  const cartItems = useSelector((state: RootState) => state.cart.items);
+  const cartItems = useSelector(selectCartItems);
   const productItem = cartItems.find((item) => product?.id == item.id);
   const сartToppingItems = useSelector(selectCartToppingItems);
 
@@ -28,6 +29,7 @@ const ProductDetail = () => {
       id: item.id,
       title: item.title,
       price: item.price,
+      slug: item.slug,
       quantity: 1,
       image: item.image,
       options: item.topping,

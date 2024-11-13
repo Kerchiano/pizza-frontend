@@ -57,6 +57,24 @@ export interface Topping {
   quantity: number;
 }
 
+export interface OrderItem {
+  product?: number;
+  topping?: number;
+  quantity: number;
+}
+
+export interface Order {
+  user: number;
+  total_amount: number;
+  paid_amount?: number;
+  delivery_address?: number;
+  restaurant?: undefined;
+  payment_method: string;
+  delivery_date: string;
+  delivery_time: string;
+  order_items: OrderItem[];
+}
+
 export const apiSlice = createApi({
   reducerPath: "api-cities",
   baseQuery: fetchBaseQuery({ baseUrl: "http://127.0.0.1:8000" }),
@@ -94,6 +112,13 @@ export const apiSlice = createApi({
     getProduct: builder.query<Product, string>({
       query: (productSlug) => `/products/${productSlug}/`,
     }),
+    addOrder: builder.mutation<Order, Order>({
+      query: (Order) => ({
+        url: "/orders/",
+        method: "POST",
+        body: Order,
+      }),
+    }),
   }),
 });
 
@@ -105,4 +130,5 @@ export const {
   useGetProductsQuery,
   useGetProductQuery,
   useGetRestaurantByRestaurantSlugQuery,
+  useAddOrderMutation
 } = apiSlice;

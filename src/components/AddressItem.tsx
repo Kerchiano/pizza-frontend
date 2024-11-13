@@ -14,12 +14,18 @@ interface AddressItemProps {
 }
 
 const AddressItem = ({ address, onDelete }: AddressItemProps) => {
+  const CITY_CHOICES: { [key: string]: string } = {
+    K: "Київ",
+    Kh: "Харків",
+    D: "Дніпро",
+    M: "Миколаїв",
+  };
   return (
     <form action="delete" className="list-delivery-address">
       <div className="address-item">
         <div className="w-1/5 city-block">
           <div className="title">Місто</div>
-          <div className="value">{address.city}</div>
+          <div className="value">{CITY_CHOICES[address.city]}</div>
         </div>
         <div className="w-2/5 street-block">
           <div className="title">Вулиця</div>

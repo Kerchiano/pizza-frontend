@@ -70,6 +70,7 @@ const PersonalDataForm = ({ userDetails }: PersonalDataFormProps) => {
   return (
     <Formik
       initialValues={{
+        id: userDetails?.id,
         first_name: userDetails?.first_name || "",
         phone_number: userDetails?.phone_number || "",
         email: userDetails?.email || "",
