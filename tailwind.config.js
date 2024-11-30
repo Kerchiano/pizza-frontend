@@ -13,6 +13,9 @@ export default {
       transitionDuration: {
         'base-transition': '300ms',
       },
+      screens: {
+        'custom-569': '569px',
+      },
     },
   },
   plugins: [],

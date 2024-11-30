@@ -13,7 +13,8 @@ import {
   selectCartTotalPrice,
 } from "../cartSlice";
 import { Address } from "./AddressItem";
-import { OrderItem, useAddOrderMutation } from "../apiSlice";
+import { OrderItem } from "../authApi";
+import { useAddOrderMutation } from "../authApi";
 import SelectError from "./SelectError";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
@@ -24,11 +25,15 @@ import { useDispatch } from "react-redux";
 interface PersonalDataFormProps {
   userDetails: User;
   addresses: Address[];
+  isLoading: boolean;
+  addressIsLoading: boolean;
 }
 
 const CourierDeliveryForm = ({
   userDetails,
   addresses,
+  isLoading,
+  addressIsLoading,
 }: PersonalDataFormProps) => {
   const cartTotalPrice = useSelector(selectCartTotalPrice);
   const [selectedDate, setSelectedDate] = useState<string>("Сьогодні");
@@ -39,13 +44,17 @@ const CourierDeliveryForm = ({
   const navigate = useNavigate();
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const citySlug = useSelector((state: RootState) => state.city.citySlug);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
-  const openModal = () => setModalIsOpen(true);
+  const openModal = () => {
+    setModalIsOpen(true);
+    document.body.style.overflowY = "hidden";
+  };
   const closeModal = () => {
     setModalIsOpen(false);
     navigate(`/${citySlug}`);
     dispatch(clearCart());
+    document.body.style.overflowY = "auto";
   };
 
   const orderItems: OrderItem[] = [];
@@ -85,7 +94,6 @@ const CourierDeliveryForm = ({
   };
 
   const validationSchema = Yup.object({
-    first_name: Yup.string().required("Ім'я обов'язково"),
     delivery_address: Yup.string().test(
       "delivery-address-required",
       "Виберіть адрес або якщо його нема то введіть нижче адресу",
@@ -101,12 +109,16 @@ const CourierDeliveryForm = ({
     street: Yup.string().required("Вулиця обов'язково"),
     house_number: Yup.string().required("Будинок обов'язково"),
     floor: Yup.string().required("Під'їзд обов'язково"),
-    paid_money: Yup.number()
+    paid_amount: Yup.number()
       .nullable()
-      .transform((value) => (value === "" ? null : value))
+      .transform((value, originalValue) => {
+        if (originalValue === "") return null;
+        return isNaN(originalValue) ? NaN : value;
+      })
+      .typeError("Введіть число")
       .test(
         "is-greater-than-cartTotalPrice",
-        `Недостатньо. Мінімальна сума: ${cartTotalPrice + 59}`,
+        `Недостатньо. Мінімальна сума: ${cartTotalPrice + 59 + 5}`,
         (value) =>
           value == null ||
           (typeof value === "number" && value > cartTotalPrice + 59)
@@ -115,7 +127,8 @@ const CourierDeliveryForm = ({
 
   const InputWithErrorStyle = ({ name, type, placeholder, disabled }: any) => {
     const [field, meta] = useField(name);
-    const isDisabled = name === "phone_number" || name === "first_name" ? true : disabled;
+    const isDisabled =
+      name === "phone_number" || name === "first_name" ? true : disabled;
 
     return (
       <>
@@ -147,7 +160,7 @@ const CourierDeliveryForm = ({
           phone_number: userDetails?.phone_number || "",
           user: userDetails?.id,
           total_amount: cartTotalPrice + 59 + 5,
-          paid_money: "",
+          paid_amount: "",
           delivery_address: addresses[0]?.id || undefined,
           payment_method: "G",
           city: addresses[0]?.city || "K",
@@ -170,7 +183,7 @@ const CourierDeliveryForm = ({
               first_name,
               phone_number,
               total_amount,
-              paid_money,
+              paid_amount,
               delivery_address,
               delivery_date,
               delivery_time,
@@ -196,7 +209,7 @@ const CourierDeliveryForm = ({
             if (isAddressChanged) {
               const newAddress = {
                 ...addressData,
-                user: userDetails.email,
+                user: userDetails.id,
               };
               const createdAddress = await addAddress(newAddress).unwrap();
               newAddressId = createdAddress.id;
@@ -204,7 +217,7 @@ const CourierDeliveryForm = ({
 
             const orderData = {
               total_amount,
-              paid_money,
+              paid_amount: paid_amount === "" ? 0 : paid_amount,
               delivery_address: newAddressId,
               delivery_date,
               delivery_time,
@@ -223,149 +236,151 @@ const CourierDeliveryForm = ({
         }}
       >
         {({ setFieldValue, handleChange, isSubmitting, values }) => (
-          <Form className="courier-delivery-form">
-            <InputWithErrorStyle
-              name="first_name"
-              type="text"
-              placeholder="Ім'я:"
-            />
-            <InputWithErrorStyle
-              name="phone_number"
-              type="text"
-              placeholder="Номер телефону:"
-              showAddress={true}
-            />
-            <div className="estetic-line"></div>
-            <SelectError
-              name="delivery_address"
-              placeholder="Адрес"
-              options={options}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                const selectedAddressId = Number(e.target.value);
-                choiceAddress(selectedAddressId, setFieldValue);
-                setFieldValue("delivery_address", selectedAddressId);
-              }}
-            />
-            <div className="delivery-address">
-              <div className="exist-or-new-address">
-                <div className="form-field city-field">
-                  <label className="block text-black text-sm mb-[5px]">
-                    Місто
+          <>
+            {isLoading || addressIsLoading ? (
+              <div
+                className="w-[150px] h-[150px] border-[16px] border-t-transparent border-green-500 rounded-full animate-spin m-auto my-4"
+                role="status"
+              ></div>
+            ) : (
+              <Form className="courier-delivery-form">
+                <InputWithErrorStyle
+                  name="first_name"
+                  type="text"
+                  placeholder="Ім'я:"
+                />
+                <InputWithErrorStyle
+                  name="phone_number"
+                  type="text"
+                  placeholder="Номер телефону:"
+                  showAddress={true}
+                />
+                <div className="estetic-line"></div>
+                <SelectError
+                  name="delivery_address"
+                  placeholder="Адрес"
+                  options={options}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                    const selectedAddressId = Number(e.target.value);
+                    choiceAddress(selectedAddressId, setFieldValue);
+                    setFieldValue("delivery_address", selectedAddressId);
+                  }}
+                />
+                <div className="delivery-address">
+                  <div className="exist-or-new-address">
+                    <div className="form-field city-field">
+                      <label className="block text-black text-sm mb-[5px]">
+                        Місто
+                      </label>
+                      <select
+                        name="city"
+                        value={values.city}
+                        onChange={handleChange}
+                        className="input-with-error-style border cursor-pointer"
+                      >
+                        <option value="К">Київ</option>
+                        <option value="Kh">Харків</option>
+                        <option value="D">Дніпро</option>
+                        <option value="M">Миколаїв</option>
+                      </select>
+                    </div>
+                    <InputWithErrorStyle
+                      placeholder="Вулиця:"
+                      name="street"
+                      type="text"
+                    />
+                    <InputWithErrorStyle
+                      placeholder="Будинок:"
+                      name="house_number"
+                      type="text"
+                    />
+                    <InputWithErrorStyle
+                      placeholder="Під'їзд:"
+                      name="floor"
+                      type="text"
+                    />
+                    <InputWithErrorStyle
+                      placeholder="Этаж:"
+                      name="entrance"
+                      type="text"
+                    />
+                    <InputWithErrorStyle
+                      placeholder="Квартира:"
+                      name="flat"
+                      type="text"
+                    />
+                  </div>
+                </div>
+                <DateSelector
+                  handleChange={handleChange}
+                  setSelectedDate={setSelectedDate}
+                />
+                <TimeSelector
+                  selectedDate={selectedDate}
+                  handleChange={handleChange}
+                />
+                <div className="form-field">
+                  <label className="block text-black text-sm mb-[5px] min-h-[20px]">
+                    Форма оплати:
                   </label>
                   <select
-                    name="city"
-                    value={values.city}
+                    name="payment_method"
+                    className="input-with-error-style border cursor-pointer mb-[10px]"
                     onChange={handleChange}
-                    className="input-with-error-style border cursor-pointer"
                   >
-                    <option value="К">Київ</option>
-                    <option value="Kh">Харків</option>
-                    <option value="D">Дніпро</option>
-                    <option value="M">Миколаїв</option>
+                    <option value="G">Готівка</option>
+                    <option value="C">Картою онлайн</option>
+                    <option value="Q">Оплата через QR при отримані</option>
                   </select>
                 </div>
-                <InputWithErrorStyle
-                  placeholder="Вулиця:"
-                  name="street"
-                  type="text"
-                />
-                <InputWithErrorStyle
-                  placeholder="Будинок:"
-                  name="house_number"
-                  type="text"
-                />
-                <InputWithErrorStyle
-                  placeholder="Під'їзд:"
-                  name="floor"
-                  type="text"
-                />
-                <InputWithErrorStyle
-                  placeholder="Этаж:"
-                  name="entrance"
-                  type="text"
-                />
-                <InputWithErrorStyle
-                  placeholder="Квартира:"
-                  name="flat"
-                  type="text"
-                />
-              </div>
-            </div>
-            <DateSelector
-              handleChange={handleChange}
-              setSelectedDate={setSelectedDate}
-            />
-            <TimeSelector
-              selectedDate={selectedDate}
-              handleChange={handleChange}
-            />
-            <div className="form-field">
-              <label className="block text-black text-sm mb-[5px] min-h-[20px]">
-                Форма оплати:
-              </label>
-              <select
-                name="payment_method"
-                className="input-with-error-style border cursor-pointer mb-[10px]"
-                onChange={handleChange}
-              >
-                <option value="G">Готівка</option>
-                <option value="C">Картою онлайн</option>
-                <option value="Q">Оплата через QR при отримані</option>
-              </select>
-            </div>
-            {values.payment_method !== "C" && (
-              <InputWithErrorStyle
-                placeholder="Підготувати решту з:"
-                name="paid_money"
-                type="text"
-              />
+                {values.payment_method !== "C" && (
+                  <InputWithErrorStyle
+                    placeholder="Підготувати решту з:"
+                    name="paid_amount"
+                    type="text"
+                  />
+                )}
+                <div className="wrap-pay-check">
+                  <div className="order-finalise">
+                    <div className="order-finalise-row">
+                      <div>Сума</div>
+                      <div>{cartTotalPrice} грн</div>
+                    </div>
+                    <div className="order-finalise-row">
+                      <div>Доставка</div>
+                      <div>59 грн</div>
+                    </div>
+                    <div className="order-finalise-row">
+                      <div>Пакет</div>
+                      <div>5 грн</div>
+                    </div>
+                    <div className="order-finalise-price">
+                      <div>До сплати</div>
+                      <div>{cartTotalPrice + 59 + 5} грн</div>
+                    </div>
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="checkout-btn-courier"
+                    >
+                      Оформити замовлення
+                    </button>
+                  </div>
+                </div>
+              </Form>
             )}
-            <div className="wrap-pay-check">
-              <div className="order-finalise">
-                <div className="order-finalise-row">
-                  <div>Сума</div>
-                  <div>{cartTotalPrice} грн</div>
-                </div>
-                <div className="order-finalise-row">
-                  <div>Доставка</div>
-                  <div>59 грн</div>
-                </div>
-                <div className="order-finalise-row">
-                  <div>Пакет</div>
-                  <div>5 грн</div>
-                </div>
-                <div className="order-finalise-price">
-                  <div>До сплати</div>
-                  <div>{cartTotalPrice + 59 + 5} грн</div>
-                </div>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="checkout-btn-courier"
-                >
-                  Оформити замовлення
-                </button>
-              </div>
-            </div>
-          </Form>
+          </>
         )}
       </Formik>
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
         portalClassName="modal-root"
+        className="modal-order-content"
         style={{
           overlay: { backgroundColor: "rgba(0, 0, 0, 0.7)" },
-          content: {
-            color: "black",
-            padding: "20px",
-            margin: "auto",
-            width: "500px",
-            height: "350px",
-            borderRadius: "10px",
-          },
         }}
-        contentLabel="Успешная регистрация"
+        contentLabel="Успішне замовлення"
       >
         <div className="flex flex-col justify-center items-center relative">
           <h2 className="mb-5 mt-10">Оформлення замовлення успішно!</h2>

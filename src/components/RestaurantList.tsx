@@ -6,24 +6,34 @@ import { useNavigate } from "react-router-dom";
 
 interface IRestaurantList {
   citySlug: string;
+  closeMenu: () => void;
 }
 
-const RestaurantList = ({ citySlug }: IRestaurantList) => {
+const RestaurantList = ({ citySlug, closeMenu }: IRestaurantList) => {
   const { data = [] } = useGetRestaurantsByCityQuery(citySlug);
   const { isToggled, toggle, setFalse } = useToggle();
   const dropListRef = useClickOutside(() => setFalse());
   const navigate = useNavigate();
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, slug: string) => {
+  const handleClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    slug: string
+  ) => {
     e.preventDefault();
     setFalse();
     navigate(`/${citySlug}/restaurants/${slug}`);
+    closeMenu()
   };
 
   return (
     <div ref={dropListRef} className="ml-8 relative mr-4 text-base  lg:ml-4 ">
-      <div onClick={toggle} className="drop-list-triangle flex cursor-pointer text-white font-medium">
+      <div
+        onClick={toggle}
+        className="drop-list-triangle flex cursor-pointer text-white font-medium"
+      >
         <UtensilsCrossed className="hidden sm:block lg:hidden" />
-        <span className="duration-base-transition block sm:hidden lg:block text-black lg:text-white">Ресторани</span>
+        <span className="duration-base-transition block sm:hidden lg:block text-black lg:text-white">
+          Ресторани
+        </span>
       </div>
       {isToggled && (
         <div className="drop-list-content w-[380px]">
@@ -35,6 +45,7 @@ const RestaurantList = ({ citySlug }: IRestaurantList) => {
                     e.preventDefault();
                     setFalse();
                     navigate(`/${citySlug}/restaurants`);
+                    closeMenu()
                   }}
                   className="text-zinc-600 pointer-events-auto hover:text-custom-orange duration-base-transition"
                   href={`/${citySlug}/restaurants`}

@@ -6,11 +6,9 @@ import { useState } from "react";
 import TimeSelector from "./TimeSelector";
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
-import {
-  OrderItem,
-  useAddOrderMutation,
-  useGetRestaurantsByCityQuery,
-} from "../apiSlice";
+import { useGetRestaurantsByCityQuery } from "../apiSlice";
+import { OrderItem } from "../authApi";
+import { useAddOrderMutation } from "../authApi";
 import {
   clearCart,
   selectCartItems,
@@ -26,9 +24,15 @@ import { useDispatch } from "react-redux";
 
 interface PersonalDataFormProps {
   userDetails: User;
+  isLoading: boolean;
+  addressIsLoading: boolean;
 }
 
-const RestaurantDeliveryForm = ({ userDetails }: PersonalDataFormProps) => {
+const RestaurantDeliveryForm = ({
+  userDetails,
+  isLoading,
+  addressIsLoading,
+}: PersonalDataFormProps) => {
   const citySlug = useSelector((state: RootState) => state.city.citySlug);
   const cartTotalPrice = useSelector(selectCartTotalPrice);
   const { data: restaurants = [] } = useGetRestaurantsByCityQuery(citySlug);
@@ -38,13 +42,17 @@ const RestaurantDeliveryForm = ({ userDetails }: PersonalDataFormProps) => {
   const cartToppingItems = useSelector(selectCartToppingItems);
   const navigate = useNavigate();
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
-  const openModal = () => setModalIsOpen(true);
+  const openModal = () => {
+    setModalIsOpen(true);
+    document.body.style.overflowY = "hidden";
+  };
   const closeModal = () => {
     setModalIsOpen(false);
     navigate(`/${citySlug}`);
     dispatch(clearCart());
+    document.body.style.overflowY = "auto";
   };
 
   const orderItems: OrderItem[] = [];
@@ -58,14 +66,14 @@ const RestaurantDeliveryForm = ({ userDetails }: PersonalDataFormProps) => {
   });
 
   const validationSchema = Yup.object({
-    first_name: Yup.string().required("Ім'я обов'язково"),
     restaurant: Yup.string().required("Виберіть ресторан"),
     delivery_time: Yup.string().required("Виберіть час"),
   });
 
   const InputWithErrorStyle = ({ name, type, placeholder, disabled }: any) => {
     const [field, meta] = useField(name);
-    const isDisabled = name === "phone_number" || name === "first_name" ? true : disabled;
+    const isDisabled =
+      name === "phone_number" || name === "first_name" ? true : disabled;
 
     return (
       <>
@@ -120,87 +128,89 @@ const RestaurantDeliveryForm = ({ userDetails }: PersonalDataFormProps) => {
         }}
       >
         {({ isSubmitting, handleChange }) => (
-          <Form className="restaurant-delivery-form">
-            <InputWithErrorStyle
-              name="first_name"
-              type="text"
-              placeholder="Ім'я"
-            />
-            <InputWithErrorStyle
-              name="phone_number"
-              type="text"
-              placeholder="Номер телефону"
-              showAddress={true}
-            />
-            <SelectError
-              name="restaurant"
-              placeholder="Ресторан"
-              options={restaurants.map((restaurant) => ({
-                value: restaurant.id,
-                label: restaurant.address,
-              }))}
-            />
-            <DateSelector
-              setSelectedDate={setSelectedDate}
-              handleChange={handleChange}
-            />
-            <TimeSelector
-              selectedDate={selectedDate}
-              handleChange={handleChange}
-            />
-            <div className="form-field">
-              <label className="block text-black text-sm mb-[5px] min-h-[20px]">
-                Форма оплати:
-              </label>
-              <select
-                onChange={handleChange}
-                name="payment_method"
-                className="input-with-error-style border cursor-pointer mb-[10px]"
-              >
-                <option value="G">Готівка</option>
-                <option value="Q">Оплата через QR при отримані</option>
-              </select>
-            </div>
-            <div className="wrap-pay-check">
-              <div className="order-finalise">
-                <div className="order-finalise-row">
-                  <div>Сума</div>
-                  <div>{cartTotalPrice} грн</div>
+          <>
+            {isLoading || addressIsLoading ? (
+              <div
+                className="w-[150px] h-[150px] border-[16px] border-t-transparent border-green-500 rounded-full animate-spin m-auto my-4"
+                role="status"
+              ></div>
+            ) : (
+              <Form className="restaurant-delivery-form">
+                <InputWithErrorStyle
+                  name="first_name"
+                  type="text"
+                  placeholder="Ім'я"
+                />
+                <InputWithErrorStyle
+                  name="phone_number"
+                  type="text"
+                  placeholder="Номер телефону"
+                  showAddress={true}
+                />
+                <SelectError
+                  name="restaurant"
+                  placeholder="Ресторан"
+                  options={restaurants.map((restaurant) => ({
+                    value: restaurant.id,
+                    label: restaurant.address,
+                  }))}
+                />
+                <DateSelector
+                  setSelectedDate={setSelectedDate}
+                  handleChange={handleChange}
+                />
+                <TimeSelector
+                  selectedDate={selectedDate}
+                  handleChange={handleChange}
+                />
+                <div className="form-field">
+                  <label className="block text-black text-sm mb-[5px] min-h-[20px]">
+                    Форма оплати:
+                  </label>
+                  <select
+                    onChange={handleChange}
+                    name="payment_method"
+                    className="input-with-error-style border cursor-pointer mb-[10px]"
+                  >
+                    <option value="G">Готівка</option>
+                    <option value="Q">Оплата через QR при отримані</option>
+                  </select>
                 </div>
-                <div className="order-finalise-row">
-                  <div>Пакет</div>
-                  <div>5 грн</div>
+                <div className="wrap-pay-check">
+                  <div className="order-finalise">
+                    <div className="order-finalise-row">
+                      <div>Сума</div>
+                      <div>{cartTotalPrice} грн</div>
+                    </div>
+                    <div className="order-finalise-row">
+                      <div>Пакет</div>
+                      <div>5 грн</div>
+                    </div>
+                    <div className="order-finalise-price">
+                      <div>До сплати</div>
+                      <div>{cartTotalPrice + 5} грн</div>
+                    </div>
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="checkout-btn-restaurant"
+                    >
+                      Оформити замовлення
+                    </button>
+                  </div>
                 </div>
-                <div className="order-finalise-price">
-                  <div>До сплати</div>
-                  <div>{cartTotalPrice + 5} грн</div>
-                </div>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="checkout-btn-restaurant"
-                >
-                  Оформити замовлення
-                </button>
-              </div>
-            </div>
-          </Form>
+              </Form>
+            )}
+          </>
         )}
       </Formik>
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
         portalClassName="modal-root"
+        className="modal-order-content"
         style={{
           overlay: { backgroundColor: "rgba(0, 0, 0, 0.7)" },
-          content: {
-            color: "black",
-            padding: "20px",
-            margin: "auto",
-            width: "500px",
-            height: "350px",
-            borderRadius: "10px",
-          },
         }}
         contentLabel="Успешная регистрация"
       >

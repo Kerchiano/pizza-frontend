@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store";
-import { Link, useLocation } from "react-router-dom";
+import { Link, Navigate, useLocation } from "react-router-dom";
 import { Minus, Plus, X } from "lucide-react";
 import { useDispatch } from "react-redux";
 import {
@@ -17,10 +17,9 @@ import {
   Topping,
 } from "../cartSlice";
 import { selectIsAuthenticated } from "../authSlice";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import CourierDeliveryForm from "./CourierDeliveryForm";
 import { useGetUserAddressesQuery, useGetUserDetailsQuery } from "../authApi";
-import { Address } from "./AddressItem";
 import RestaurantDeliveryForm from "./RestaurantDeliveryForm";
 
 const Checkout = () => {
@@ -35,23 +34,14 @@ const Checkout = () => {
   const redirectPath = location.pathname;
   const [activeTab, setActiveTab] = useState(true);
   const token = useSelector((state: RootState) => state.auth.accessToken);
-  const { data: userDetails, refetch: refetchUserDetails } =
-    useGetUserDetailsQuery(undefined, {
-      skip: !token,
+  const { data: userDetails, isLoading } = useGetUserDetailsQuery(undefined, {
+    skip: !token,
+  });
+
+  const { data: addresses = [], isLoading: addressIsLoading } =
+    useGetUserAddressesQuery(userDetails?.id || 0, {
+      skip: !userDetails?.id,
     });
-
-  const { data: addressesData, refetch: refetchUserAddresses } =
-    useGetUserAddressesQuery(userDetails?.email || "", {
-      skip: !userDetails?.email,
-    });
-
-  const [addresses, setAddresses] = useState<Address[]>([]);
-
-  useEffect(() => {
-    if (addressesData) {
-      setAddresses(addressesData);
-    }
-  }, [addressesData]);
 
   const handleTabClick = (tab: boolean) => {
     setActiveTab(tab);
@@ -81,21 +71,7 @@ const Checkout = () => {
     dispatch(removeToppingItemFromCart(toppingId));
   };
 
-  useEffect(() => {
-    if (token) {
-      if (refetchUserDetails) {
-        refetchUserDetails();
-      }
-    }
-  }, [token, refetchUserDetails]);
-
-  useEffect(() => {
-    if (userDetails?.email && refetchUserAddresses) {
-      refetchUserAddresses();
-    }
-  }, [userDetails, refetchUserAddresses]);
-
-  return (
+  return cartQuantity > 0 ? (
     <main className="checkout-main">
       <section className="checkout-page">
         <div className="checkout-container">
@@ -264,19 +240,23 @@ const Checkout = () => {
                       <CourierDeliveryForm
                         userDetails={userDetails}
                         addresses={addresses}
+                        isLoading={isLoading}
+                        addressIsLoading={addressIsLoading}
                       />
                     )}
                   </div>
-                  
                 </>
               ) : (
                 <>
                   <div className="restaurant-delivery">
                     {userDetails && (
-                      <RestaurantDeliveryForm userDetails={userDetails} />
+                      <RestaurantDeliveryForm
+                        userDetails={userDetails}
+                        isLoading={isLoading}
+                        addressIsLoading={addressIsLoading}
+                      />
                     )}
                   </div>
-                  
                 </>
               )}
             </div>
@@ -284,6 +264,8 @@ const Checkout = () => {
         </div>
       </section>
     </main>
+  ) : (
+    <Navigate to={`/${citySlug}`} />
   );
 };
 

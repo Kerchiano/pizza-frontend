@@ -57,22 +57,14 @@ export interface Topping {
   quantity: number;
 }
 
-export interface OrderItem {
-  product?: number;
-  topping?: number;
-  quantity: number;
-}
-
-export interface Order {
-  user: number;
-  total_amount: number;
-  paid_amount?: number;
-  delivery_address?: number;
-  restaurant?: undefined;
-  payment_method: string;
-  delivery_date: string;
-  delivery_time: string;
-  order_items: OrderItem[];
+export interface Review {
+  user?: number | undefined;
+  review: string;
+  rating: string;
+  restaurant: undefined;
+  email?: string;
+  first_name?: string;
+  phone_number?: string;
 }
 
 export const apiSlice = createApi({
@@ -112,11 +104,11 @@ export const apiSlice = createApi({
     getProduct: builder.query<Product, string>({
       query: (productSlug) => `/products/${productSlug}/`,
     }),
-    addOrder: builder.mutation<Order, Order>({
-      query: (Order) => ({
-        url: "/orders/",
-        method: "POST",
-        body: Order,
+    addReview: builder.mutation<Review, Review>({
+      query: (reviewDetails) => ({
+        url: "/reviews/",
+        method: "Post",
+        body: reviewDetails,
       }),
     }),
   }),
@@ -130,5 +122,5 @@ export const {
   useGetProductsQuery,
   useGetProductQuery,
   useGetRestaurantByRestaurantSlugQuery,
-  useAddOrderMutation
+  useAddReviewMutation,
 } = apiSlice;

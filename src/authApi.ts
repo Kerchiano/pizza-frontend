@@ -2,8 +2,6 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { setCredentials, logout } from "../src/authSlice";
 import { FetchArgs, BaseQueryApi } from "@reduxjs/toolkit/query";
 import { RootState } from "./store";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
 
 export interface User {
   id: number;
@@ -11,6 +9,29 @@ export interface User {
   phone_number: string;
   email: string;
   gender: string;
+}
+
+export interface OrderItem {
+  product?: number;
+  product_title?: string;
+  product_price?: string;
+  topping?: number;
+  topping_title?: string;
+  topping_price?: string;
+  quantity: number;
+}
+
+export interface Order {
+  id?: number;
+  user: number;
+  total_amount: number;
+  paid_amount?: string | number;
+  delivery_address?: number;
+  restaurant?: undefined;
+  payment_method: string;
+  delivery_date: string;
+  delivery_time: string;
+  order_items: OrderItem[];
 }
 
 export interface UserAddresses {
@@ -42,8 +63,8 @@ const baseQueryWithReauth = async (
   api: BaseQueryApi,
   extraOptions: {}
 ) => {
-  let result = await baseQuery(args, api, extraOptions);
   const refresh = localStorage.getItem("refresh");
+  let result = await baseQuery(args, api, extraOptions);
   if (result.error && result.error.status === 401 && refresh) {
     const refreshResult = await baseQuery(
       { url: "auth/jwt/refresh/", method: "POST", body: { refresh: refresh } },
@@ -64,9 +85,6 @@ const baseQueryWithReauth = async (
       result = await baseQuery(args, api, extraOptions);
     } else {
       api.dispatch(logout());
-      const citySlug = useSelector((state: RootState) => state.city.citySlug);
-      const navigate = useNavigate();
-      navigate(`/${citySlug}`);
     }
   }
 
@@ -76,6 +94,7 @@ const baseQueryWithReauth = async (
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: baseQueryWithReauth,
+  tagTypes: ["Addresses", "Orders"],
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (credentials) => ({
@@ -101,8 +120,9 @@ export const authApi = createApi({
         body: userDetails,
       }),
     }),
-    getUserAddresses: builder.query<UserAddresses[], string>({
-      query: (email) => `/address/?user=${email}`,
+    getUserAddresses: builder.query<UserAddresses[], number>({
+      query: (id) => `/address/?user=${id}`,
+      providesTags: () => [{ type: "Addresses" }],
     }),
     addAddress: builder.mutation({
       query: (addressData) => ({
@@ -110,12 +130,26 @@ export const authApi = createApi({
         method: "POST",
         body: addressData,
       }),
+      invalidatesTags: () => [{ type: "Addresses" }],
     }),
-    removeAddress: builder.mutation<void, number>({
-      query: (addressId) => ({
-        url: `/address/delete/${addressId}/`,
+    addOrder: builder.mutation<Order, Order>({
+      query: (Order) => ({
+        url: "/orders/",
+        method: "POST",
+        body: Order,
+      }),
+      invalidatesTags: () => [{ type: "Orders" }],
+    }),
+    getOrders: builder.query<Order[], number>({
+      query: (user) => `/orders/?user=${user}`,
+      providesTags: () => [{ type: "Orders" }],
+    }),
+    removeAddress: builder.mutation({
+      query: (id) => ({
+        url: `/address/delete/${id}/`,
         method: "DELETE",
       }),
+      invalidatesTags: () => [{ type: "Addresses" }],
     }),
     refreshToken: builder.mutation<{ access: string; refresh: string }, void>({
       query: () => ({
@@ -136,4 +170,6 @@ export const {
   useGetUserAddressesQuery,
   useAddAddressMutation,
   useRemoveAddressMutation,
+  useAddOrderMutation,
+  useGetOrdersQuery,
 } = authApi;

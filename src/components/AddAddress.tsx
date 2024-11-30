@@ -1,15 +1,13 @@
 import { Formik, Form, useField } from "formik";
 import * as Yup from "yup";
 import { useAddAddressMutation } from "../authApi";
-import { Address } from "./AddressItem";
 
 interface IAddAddress {
-  user: string;
-  onAddAddress: (newAddress: Address) => void;
+  user: number;
 }
 
-const AddAddress = ({user, onAddAddress }: IAddAddress) => {
-  const [addAddress] = useAddAddressMutation()
+const AddAddress = ({ user }: IAddAddress) => {
+  const [addAddress] = useAddAddressMutation();
 
   const validationSchema = Yup.object({
     street: Yup.string().required("Street is required"),
@@ -56,11 +54,10 @@ const AddAddress = ({user, onAddAddress }: IAddAddress) => {
       validationSchema={validationSchema}
       validateOnChange={true}
       validateOnBlur={false}
-      onSubmit={async (values, { setSubmitting, resetForm  }) => {
+      onSubmit={async (values, { setSubmitting, resetForm }) => {
         try {
-          const newAddress = await addAddress({ ...values, user }).unwrap();
-          onAddAddress(newAddress);
-          resetForm()
+          await addAddress({ ...values, user }).unwrap();
+          resetForm();
         } catch (err: unknown) {
           console.error("Failed to add address: ", err);
         } finally {
@@ -73,9 +70,7 @@ const AddAddress = ({user, onAddAddress }: IAddAddress) => {
           <div className="title">Додати адресу</div>
           <div className="new-address">
             <div className="form-group city-field">
-              <label className="block text-black text-sm mb-[5px]">
-                Місто
-              </label>
+              <label className="block text-black text-sm mb-[5px]">Місто</label>
               <select
                 name="city"
                 value={values.city}

@@ -13,16 +13,23 @@ import {
   Topping,
 } from "../cartSlice";
 import { useSelector } from "react-redux";
-import { RootState } from "../store";
 import { Minus, Plus } from "lucide-react";
+import { useState } from "react";
+import ErrorPage from "./ErrorPage";
 
 const ProductDetail = () => {
   const { productSlug } = useParams<{ productSlug: string }>();
-  const { data: product } = useGetProductQuery(productSlug || "");
+  const { data: product, isLoading } = useGetProductQuery(productSlug || "");
   const dispatch = useDispatch();
   const cartItems = useSelector(selectCartItems);
   const productItem = cartItems.find((item) => product?.id == item.id);
-  const сartToppingItems = useSelector(selectCartToppingItems);
+  const cartToppingItems = useSelector(selectCartToppingItems);
+
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
+
+  const handleImageLoad = () => {
+    setIsImageLoaded(true);
+  };
 
   const handleAddToCart = (item: Product) => {
     const newItem = {
@@ -80,24 +87,55 @@ const ProductDetail = () => {
     }
   };
 
-  return (
+  if (isLoading) {
+    return (
+      <main className="pl-20 mt-30 lg:mt-20 flex w-full flex-col flex-1 bg-gray-100">
+        <section className="p-[10px] mt-[20px] mb-[35px] lg:p-[60px] lg:pt-[0]">
+          <div className="py-[42px]">
+            <div
+              className="w-[150px] h-[150px] border-[16px] border-t-transparent border-green-500 rounded-full animate-spin m-auto my-4"
+              role="status"
+            ></div>
+          </div>
+        </section>
+      </main>
+    );
+  }
+
+  return product ? (
     <>
       <main>
         <section className="product-page">
           <div className="product-page-content">
             <div className="product-page-inside">
-              <div className="product-img">
-                <img src={`${product?.image}`} alt="" />
+              <div className="product-img relative">
+                {isLoading || !isImageLoaded ? (
+                  <div className="absolute inset-0 bg-gray-300 animate-pulse"></div>
+                ) : null}
+                <img
+                  src={`${product?.image}`}
+                  alt={product?.title || "Product image"}
+                  className={`absolute inset-0 m-auto w-full h-full object-cover transition-opacity duration-300 ${
+                    isImageLoaded ? "opacity-100" : "opacity-0"
+                  }`}
+                  onLoad={handleImageLoad}
+                />
               </div>
               <div className="product-detail-description">
-                <h1>{`${product?.title}`}</h1>
+                {isLoading ? (
+                  <span className="bg-gray-300 animate-pulse h-14 w-96 block"></span>
+                ) : (
+                  <h1>{product?.title}</h1>
+                )}
                 <div className="description">
                   <div className="less">
                     <div className="description-desktop">
                       <p>Інгредієнти</p>
-                      Філе куряче sous-vide, шинка, мисливські ковбаски,
-                      пепероні, сир Моцарела, печериці, петрушка, цибуля
-                      ріпчаста, соус BBQ та трюфельна олія
+                      {isLoading ? (
+                        <div className="bg-gray-300 animate-pulse h-24 w-full block"></div>
+                      ) : (
+                        `${product?.description}`
+                      )}
                     </div>
                   </div>
                 </div>
@@ -115,7 +153,7 @@ const ProductDetail = () => {
                             e,
                             product.id,
                             topping,
-                            сartToppingItems,
+                            cartToppingItems,
                             handleAddItemToppingToCart,
                             handleIncreaseToppingQuantity,
                             handleDecreaseToppingQuantity
@@ -130,83 +168,90 @@ const ProductDetail = () => {
                     </label>
                   ))}
                 </div>
-                <div className="supplements-less">
-                  <p className="supplements-title">Добавки</p>
-                  <div className="supplements-content">
-                    {product?.topping.map((topping) => (
-                      <div
-                        key={`${topping.id}`}
-                        className="supplements-content-item"
-                      >
-                        <label className="supplements-item">
-                          <input
-                            className="hidden"
-                            type="checkbox"
-                            onChange={(e) =>
-                              handleToppingChange(
-                                e,
-                                product.id,
-                                topping,
-                                сartToppingItems,
-                                handleAddItemToppingToCart,
-                                handleIncreaseToppingQuantity,
-                                handleDecreaseToppingQuantity
-                              )
-                            }
-                          />
-                          <span className="supplements-item-name">{`${topping.title}`}</span>
-                          <span className="supplements-item-price">
-                            {`+${topping.price}`}
-                            <span> грн</span>
-                          </span>
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="bottom">
-                  <div className="price-wrap-btn">
-                    <div className="bottom-price">
-                      <div className="price-less">
-                        <span>{`${product?.price}`} грн</span>
-                      </div>
-                      {!productItem?.quantity ? (
-                        <a
-                          onClick={() => product && handleAddToCart(product)}
-                          className="product-buy-button"
+                {product?.category.toString() == "Піци" && (
+                  <div className="supplements-less">
+                    <p className="supplements-title">Добавки</p>
+                    <div className="supplements-content">
+                      {product?.topping.map((topping) => (
+                        <div
+                          key={`${topping.id}`}
+                          className="supplements-content-item"
                         >
-                          <span>Замовити</span>
-                        </a>
-                      ) : (
-                        <a className="product-buy-button">
-                          <div className="button-active">
-                            <Minus
-                              onClick={() =>
-                                productItem?.quantity > 1 &&
-                                handleDecreaseQuantity(productItem?.id)
-                              }
-                              className={`${
-                                productItem?.quantity > 1 && "hover:opacity-70"
-                              }`}
-                              height={30}
-                            />
+                          <label className="supplements-item">
                             <input
-                              disabled
-                              value={productItem?.quantity}
-                              type="text"
-                            />
-                            <Plus
-                              onClick={() =>
-                                product && handleIncreaseQuantity(product.id)
+                              className="hidden"
+                              type="checkbox"
+                              onChange={(e) =>
+                                handleToppingChange(
+                                  e,
+                                  product.id,
+                                  topping,
+                                  cartToppingItems,
+                                  handleAddItemToppingToCart,
+                                  handleIncreaseToppingQuantity,
+                                  handleDecreaseToppingQuantity
+                                )
                               }
-                              className="hover:opacity-70"
-                              height={30}
                             />
-                          </div>
-                        </a>
-                      )}
+                            <span className="supplements-item-name">{`${topping.title}`}</span>
+                            <span className="supplements-item-price">
+                              {`+${topping.price}`}
+                              <span> грн</span>
+                            </span>
+                          </label>
+                        </div>
+                      ))}
                     </div>
                   </div>
+                )}
+                <div className="bottom">
+                  {isLoading ? (
+                    <span className="bg-gray-300 animate-pulse h-[112px] w-[230px] block"></span>
+                  ) : (
+                    <div className="price-wrap-btn">
+                      <div className="bottom-price">
+                        <div className="price-less">
+                          <span>{`${product?.price}`} грн</span>
+                        </div>
+                        {!productItem?.quantity ? (
+                          <a
+                            onClick={() => product && handleAddToCart(product)}
+                            className="product-buy-button"
+                          >
+                            <span>Замовити</span>
+                          </a>
+                        ) : (
+                          <a className="product-buy-button">
+                            <div className="button-active">
+                              <Minus
+                                onClick={() =>
+                                  productItem?.quantity > 1 &&
+                                  handleDecreaseQuantity(productItem?.id)
+                                }
+                                className={`${
+                                  productItem?.quantity > 1 &&
+                                  "hover:opacity-70"
+                                }`}
+                                height={30}
+                              />
+                              <input
+                                disabled
+                                value={productItem?.quantity}
+                                type="text"
+                              />
+                              <Plus
+                                onClick={() =>
+                                  product && handleIncreaseQuantity(product.id)
+                                }
+                                className="hover:opacity-70"
+                                height={30}
+                              />
+                            </div>
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  )}
                   <div className="free-delivery">
                     Безкоштовна доставка при замовленні від 950 грн
                   </div>
@@ -215,13 +260,17 @@ const ProductDetail = () => {
                   </div>
                 </div>
                 <div className="description-mobile">
-                  <div className="less">
-                    <div className="description-mobile">
-                      Філе куряче sous-vide, шинка, мисливські ковбаски,
-                      пепероні, сир Моцарела, печериці, петрушка, цибуля
-                      ріпчаста, соус BBQ та трюфельна олія
+                  {isLoading ? (
+                    <div className="bg-gray-300 animate-pulse h-24 w-full block"></div>
+                  ) : (
+                    <div className="less">
+                      <div className="description-mobile">
+                        Філе куряче sous-vide, шинка, мисливські ковбаски,
+                        пепероні, сир Моцарела, печериці, петрушка, цибуля
+                        ріпчаста, соус BBQ та трюфельна олія
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
                 <div className="mobile-bottom">
                   <div className="mobile-bottom-container">
@@ -239,6 +288,8 @@ const ProductDetail = () => {
         </section>
       </main>
     </>
+  ) : (
+    <ErrorPage />
   );
 };
 

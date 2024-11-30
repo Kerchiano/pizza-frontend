@@ -14,7 +14,6 @@ export interface CartItem {
   slug: string;
   price: number;
   quantity: number;
-  options?: Topping[];
 }
 
 interface CartState {
@@ -51,7 +50,6 @@ const cartSlice = createSlice({
   reducers: {
     addItemToCart: (state, action: PayloadAction<CartItem>) => {
       const item = action.payload;
-      item.options = [];
       state.items.push(item);
 
       state.totalQuantity += 1;
@@ -172,23 +170,15 @@ const cartSlice = createSlice({
 
       if (itemIndex >= 0) {
         const item = state.items[itemIndex];
-        const itemQuantity = item.quantity;
 
         state.totalQuantity -= item.quantity;
         state.totalPrice -= item.price * item.quantity;
         state.items.splice(itemIndex, 1);
 
         state.toppingItems.forEach((topping) => {
-          if (topping.quantity > itemQuantity) {
-            topping.quantity -= itemQuantity;
-            state.totalPrice -= topping.price * itemQuantity;
-            state.totalQuantity -= itemQuantity;
-          } else {
-            state.totalPrice -= topping.price * topping.quantity;
-            topping.quantity = 0;
-            state.totalQuantity -= itemQuantity;
-            state.toppingItems = [];
-          }
+          state.totalPrice -= topping.price * topping.quantity;
+          state.totalQuantity -= topping.quantity;
+          state.toppingItems = [];
         });
         saveCartToLocalStorage(state);
       }

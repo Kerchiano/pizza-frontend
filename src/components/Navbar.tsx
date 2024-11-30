@@ -158,7 +158,7 @@ const Navbar = () => {
           <div className="w-auto flex justify-start items-center lg:w-1/2">
             <CityList city={cityName} newCity={newCity} />
             <div className="hidden sm:block">
-              <RestaurantList citySlug={citySlug} />
+              <RestaurantList closeMenu={closeMenu} citySlug={citySlug} />
             </div>
             <ContactList />
           </div>
@@ -177,11 +177,23 @@ const Navbar = () => {
                   </span>
                 </Link>
               )}
-              <img
-                className="min-w-10 h-10 block lg:hidden"
-                src="https://raw.githubusercontent.com/Kerchiano/storage-photos/refs/heads/main/pizza_photos/mafia_logo.jpg"
-                alt=""
-              />
+              {isAuthenticated ? (
+                <Link to="/profile/personal_data">
+                  <img
+                    className="min-w-10 h-10 block lg:hidden"
+                    src="https://raw.githubusercontent.com/Kerchiano/storage-photos/refs/heads/main/pizza_photos/mafia_logo.jpg"
+                    alt=""
+                  />
+                </Link>
+              ) : (
+                <Link to="/login">
+                  <img
+                    className="min-w-10 h-10 block lg:hidden"
+                    src="https://raw.githubusercontent.com/Kerchiano/storage-photos/refs/heads/main/pizza_photos/mafia_logo.jpg"
+                    alt=""
+                  />
+                </Link>
+              )}
             </div>
             <div className="shopping-cart ml-2 sm:ml-7">
               <a
@@ -215,20 +227,20 @@ const Navbar = () => {
         <div className="wrapper-hamburger-menu-top hover:text-transparent">
           <div className="user-cabinet ml-8 flex justify-center">
             {isAuthenticated ? (
-              <Link to="/profile/personal_data" className="inline-block">
+              <Link onClick={closeMenu} to="/profile/personal_data" className="inline-block">
                 <span className="text-black font-medium cursor-pointer block sm:hidden">
                   Кабінет
                 </span>
               </Link>
             ) : (
-              <Link to="/login" className="inline-block">
+              <Link onClick={closeMenu} to="/login" className="inline-block">
                 <span className="text-black font-medium cursor-pointer block sm:hidden">
                   Вхід
                 </span>
               </Link>
             )}
             <div className="inline-block rs-list sm:hidden">
-              <RestaurantList citySlug={citySlug} />
+              <RestaurantList closeMenu={closeMenu} citySlug={citySlug} />
             </div>
           </div>
         </div>
@@ -244,7 +256,7 @@ const Navbar = () => {
               }}
             >
               <a
-                href="#"
+                href={`/${citySlug}/products/${category.slug}`}
                 className="flex px-6 py-4 w-52 items-center border-b hover:bg-orange-300"
               >
                 <img className="mr-3 h-8 w-8" src={category.icon} alt="" />
@@ -347,7 +359,11 @@ const Navbar = () => {
               <span>Сума</span>
               <span>{cartTotalPrice} грн</span>
             </div>
-            <Link onClick={(e) => toggle(e, true)} className="checkout-link" to={"/checkout"}>
+            <Link
+              onClick={(e) => toggle(e, true)}
+              className="checkout-link"
+              to={"/checkout"}
+            >
               Оформити
             </Link>
           </div>

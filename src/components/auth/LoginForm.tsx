@@ -27,7 +27,11 @@ const transformErrors = (err: LoginErrorResponse) => {
   return formikErrors;
 };
 
-const LoginForm = () => {
+interface LogiFormProps {
+  setIsLoggingIn: (isLoading: boolean) => void;
+}
+
+const LoginForm = ({ setIsLoggingIn }: LogiFormProps) => {
   const dispatch = useDispatch();
   const [login] = useLoginMutation();
   const navigate = useNavigate();
@@ -79,6 +83,7 @@ const LoginForm = () => {
       validateOnBlur={false}
       onSubmit={async (values, { setSubmitting, setErrors }) => {
         try {
+          setIsLoggingIn(true);
           const user = await login(values).unwrap();
           dispatch(setCredentials({ accessToken: user.access }));
           localStorage.setItem("refresh", user.refresh);
@@ -96,6 +101,7 @@ const LoginForm = () => {
           }
         } finally {
           setSubmitting(false);
+          setIsLoggingIn(false);
         }
       }}
     >

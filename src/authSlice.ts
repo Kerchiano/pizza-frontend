@@ -6,19 +6,26 @@ export interface AuthState {
 }
 
 const getInitialAuthState = (): AuthState => {
-  const storedState = localStorage.getItem("isAuthenticated");
+  const storedIsAuthenticated = localStorage.getItem("isAuthenticated");
+  const storedAccessToken = localStorage.getItem("accessToken");
   return {
-    accessToken: null,
-    isAuthenticated: storedState ? JSON.parse(storedState) : false,
+    accessToken: storedAccessToken || null,
+    isAuthenticated: storedIsAuthenticated
+      ? JSON.parse(storedIsAuthenticated)
+      : false,
   };
 };
 
-const initialState: AuthState = getInitialAuthState();
-
-const setLocalStorage = (isAuthenticated: boolean) => {
+const setAuthInLocalStorage = (isAuthenticated: boolean, accessToken: string | null) => {
   localStorage.setItem("isAuthenticated", JSON.stringify(isAuthenticated));
+  if (accessToken) {
+    localStorage.setItem("accessToken", accessToken);
+  } else {
+    localStorage.removeItem("accessToken");
+  }
 };
 
+const initialState: AuthState = getInitialAuthState();
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -27,16 +34,18 @@ const authSlice = createSlice({
       const { accessToken } = action.payload;
       state.accessToken = accessToken;
       state.isAuthenticated = true;
-      setLocalStorage(true);
+      setAuthInLocalStorage(true, accessToken);
     },
     logout: (state) => {
       state.accessToken = null;
       state.isAuthenticated = false;
-      setLocalStorage(false);
+      setAuthInLocalStorage(false, null);
       localStorage.removeItem("refresh");
     },
     setAccessToken: (state, action: PayloadAction<string>) => {
-      state.accessToken = action.payload;
+      const accessToken = action.payload;
+      state.accessToken = accessToken;
+      setAuthInLocalStorage(state.isAuthenticated, accessToken);
     },
   },
 });

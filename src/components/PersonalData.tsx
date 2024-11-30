@@ -6,65 +6,40 @@ import {
   useRemoveAddressMutation,
 } from "../authApi";
 import ChangeUserDataForm from "../components/ChangeUserDataForm";
-import AddressItem, { Address } from "./AddressItem";
+import AddressItem from "./AddressItem";
 import AddAddress from "./AddAddress";
-import { useEffect, useState } from "react";
 
 const PersonalData = () => {
   const token = useSelector((state: RootState) => state.auth.accessToken);
   const [removeAddress] = useRemoveAddressMutation();
-  const { data: userDetails, refetch: refetchUserDetails } =
-    useGetUserDetailsQuery(undefined, {
-      skip: !token,
+
+  const { data: userDetails, isLoading } = useGetUserDetailsQuery(undefined, {
+    skip: !token,
+  });
+
+  const { data: addressesData, isLoading: addressIsLoading } =
+    useGetUserAddressesQuery(userDetails?.id || 0, {
+      skip: !userDetails?.id,
     });
-
-  const { data: addressesData, refetch: refetchUserAddresses } =
-    useGetUserAddressesQuery(userDetails?.email || "", {
-      skip: !userDetails?.email,
-    });
-
-  const [addresses, setAddresses] = useState<Address[]>([]);
-
-  useEffect(() => {
-    if (addressesData) {
-      setAddresses(addressesData);
-    }
-  }, [addressesData]);
 
   const handleDeleteAddress = (id: number) => {
     removeAddress(id);
-    setAddresses((prevAddresses) =>
-      prevAddresses.filter((address) => address.id !== id)
-    );
   };
-
-  const handleAddAddress = (newAddress: Address) => {
-    setAddresses((prevAddresses) => [...prevAddresses, newAddress]);
-  };
-
-  useEffect(() => {
-    if (token) {
-      if (refetchUserDetails) {
-        refetchUserDetails();
-      }
-    }
-  }, [token, refetchUserDetails]);
-
-  useEffect(() => {
-    if (userDetails?.email && refetchUserAddresses) {
-      refetchUserAddresses();
-    }
-  }, [userDetails, refetchUserAddresses]);
 
   return (
     <div className="data-container">
       <div className="form-title">Дані користувача:</div>
-      {userDetails && <ChangeUserDataForm userDetails={userDetails} />}
+      <ChangeUserDataForm isLoading={isLoading} userDetails={userDetails} />
       <div className="delivery-addresses">
         <div className="title">Адреси доставки:</div>
         <div className="old-address">
-          {addresses && addresses.length > 0 ? (
-            addresses.map((address) => (
+          {isLoading || addressIsLoading ? (
+            <div
+              className="w-[150px] h-[150px] border-[16px] border-t-transparent border-green-500 rounded-full animate-spin m-auto my-4"
+              role="status"
+            ></div>
+          ) : addressesData && addressesData.length > 0 ? (
+            addressesData.map((address) => (
               <AddressItem
                 key={address.id}
                 address={address}
@@ -72,13 +47,10 @@ const PersonalData = () => {
               />
             ))
           ) : (
-            <div className="not-address">Нет адресов для отображения</div>
+            <div className="not-address">Нема адрес для відображення</div>
           )}
         </div>
-        <AddAddress
-          user={userDetails?.email || ""}
-          onAddAddress={handleAddAddress}
-        />
+        <AddAddress user={userDetails?.id || 0} />
       </div>
     </div>
   );

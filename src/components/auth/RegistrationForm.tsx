@@ -38,8 +38,10 @@ const RegistrationForm = () => {
   const closeModal = () => {
     setModalIsOpen(false);
     const params = new URLSearchParams(location.search);
-    const redirectPath = params.get('redirect') ? `/login?redirect=/checkout`  : '/login';
-    navigate(redirectPath)
+    const redirectPath = params.get("redirect")
+      ? `/login?redirect=/checkout`
+      : "/login";
+    navigate(redirectPath);
   };
 
   const validationSchema = Yup.object({
@@ -86,7 +88,6 @@ const RegistrationForm = () => {
       <Formik
         initialValues={{
           first_name: "",
-          last_name: "",
           email: "",
           phone_number: "",
           password: "",
@@ -120,11 +121,6 @@ const RegistrationForm = () => {
               placeholder="First Name"
             />
             <InputWithErrorStyle
-              name="last_name"
-              type="text"
-              placeholder="Last Name"
-            />
-            <InputWithErrorStyle
               name="email"
               type="email"
               placeholder="Email"
@@ -149,16 +145,9 @@ const RegistrationForm = () => {
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
         portalClassName="modal-root"
+        className="modal-registration-content"
         style={{
           overlay: { backgroundColor: "rgba(0, 0, 0, 0.7)" },
-          content: {
-            color: "black",
-            padding: "20px",
-            margin: "auto",
-            width: "500px",
-            height: "350px",
-            borderRadius: "10px",
-          },
         }}
         contentLabel="Успешная регистрация"
       >

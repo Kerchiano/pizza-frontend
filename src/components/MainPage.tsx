@@ -1,10 +1,19 @@
 import { useSelector } from "react-redux";
 import DiscountCarousel from "./DiscountCarousel";
 import { RootState } from "../store";
+import ErrorPage from "./ErrorPage";
+import { useLocation } from "react-router-dom";
 
 const MainPage = () => {
   const cityName = useSelector((state: RootState) => state.city.cityName);
-  return (
+  const citySlug = useSelector((state: RootState) => state.city.citySlug);
+
+  const location = useLocation();
+
+  const isPathValid =
+    location.pathname === `/${citySlug}` || location.pathname === "/";
+
+  return isPathValid ? (
     <>
       <div className={cityName === "Київ" ? "" : "mb-52"}>
         <DiscountCarousel />
@@ -93,6 +102,8 @@ const MainPage = () => {
         </section>
       )}
     </>
+  ) : (
+    <ErrorPage />
   );
 };
 

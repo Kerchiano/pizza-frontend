@@ -11,10 +11,14 @@ interface PersonalDataErrorResponse {
 }
 
 interface PersonalDataFormProps {
-  userDetails: User;
+  isLoading: boolean;
+  userDetails: User | undefined;
 }
 
-const PersonalDataForm = ({ userDetails }: PersonalDataFormProps) => {
+const PersonalDataForm = ({
+  userDetails,
+  isLoading,
+}: PersonalDataFormProps) => {
   const [changeUserDetails] = useChangeUserDetailsMutation();
   const [successMessage, setSuccessMessage] = useState(false);
 
@@ -70,7 +74,7 @@ const PersonalDataForm = ({ userDetails }: PersonalDataFormProps) => {
   return (
     <Formik
       initialValues={{
-        id: userDetails?.id,
+        id: userDetails?.id || 0,
         first_name: userDetails?.first_name || "",
         phone_number: userDetails?.phone_number || "",
         email: userDetails?.email || "",
@@ -95,46 +99,68 @@ const PersonalDataForm = ({ userDetails }: PersonalDataFormProps) => {
         }
       }}
     >
-      {({ isSubmitting, handleChange, values }) => (
-        <Form className="personad-data-form flex flex-wrap justify-between">
-          <InputWithErrorStyle
-            name="first_name"
-            type="text"
-            placeholder="Ім'я"
-          />
-          <InputWithErrorStyle
-            name="phone_number"
-            type="text"
-            placeholder="Номер телефону"
-          />
-          <InputWithErrorStyle
-            name="email"
-            type="email"
-            placeholder="Електронна пошта"
-          />
-          <div className="form-group">
-            <label className="block text-black text-sm mb-[5px] min-h-[20px]">
-              Стать
-            </label>
-            <select
-              id="gender"
-              name="gender"
-              value={values.gender}
-              onChange={handleChange}
-              className="input-with-error-style border cursor-pointer mb-[10px]"
-            >
-              <option value="M">Чоловіча</option>
-              <option value="F">Жіноча</option>
-            </select>
-            <button type="submit" disabled={isSubmitting}>
-              Зберегти зміни
-            </button>
+      {({ isSubmitting, handleChange, values }) =>
+        isLoading ? (
+          <div className="flex justify-between flex-wrap">
+            <div className="w-full custom-569:w-[calc(50%-20px)] mb-[35px] custom-569:mb-[50px]">
+              <div className="h-[20px] w-full mb-[5px] bg-gray-300 animate-pulse"></div>
+              <div className="w-full py-0 px-5 h-[50px] border-[3px] bg-gray-300 animate-pulse" />
+            </div>
+            <div className="w-full custom-569:w-[calc(50%-20px)] mb-[35px] custom-569:mb-[50px]">
+              <div className="h-[20px] w-full mb-[5px] bg-gray-300 animate-pulse"></div>
+              <div className="w-full py-0 px-5 h-[50px] border-[3px] bg-gray-300 animate-pulse" />
+            </div>
+            <div className="w-full custom-569:w-[calc(50%-20px)] mb-[35px]">
+              <div className="h-[20px] w-full mb-[5px] bg-gray-300 animate-pulse"></div>
+              <div className="w-full py-0 px-5 h-[50px] border-[3px] bg-gray-300 animate-pulse" />
+            </div>
+            <div className="w-full custom-569:w-[calc(50%-20px)] mb-[35px]">
+              <div className="h-[20px] w-full mb-[5px] bg-gray-300 animate-pulse"></div>
+              <div className="w-full py-0 px-5 h-[50px] border-[3px] bg-gray-300 animate-pulse" />
+              <div className="max-w-[260px] m-auto mt-8 h-[54px] bg-gray-300 animate-pulse block"></div>
+            </div>
           </div>
-          {successMessage && (
-            <div className="success-mesage">Профіль оновлено</div>
-          )}
-        </Form>
-      )}
+        ) : (
+          <Form className="personad-data-form flex flex-wrap justify-between">
+            <InputWithErrorStyle
+              name="first_name"
+              type="text"
+              placeholder="Ім'я"
+            />
+            <InputWithErrorStyle
+              name="phone_number"
+              type="text"
+              placeholder="Номер телефону"
+            />
+            <InputWithErrorStyle
+              name="email"
+              type="email"
+              placeholder="Електронна пошта"
+            />
+            <div className="form-group">
+              <label className="block text-black text-sm mb-[5px] min-h-[20px]">
+                Стать
+              </label>
+              <select
+                id="gender"
+                name="gender"
+                value={values.gender}
+                onChange={handleChange}
+                className="input-with-error-style border cursor-pointer mb-[10px]"
+              >
+                <option value="M">Чоловіча</option>
+                <option value="F">Жіноча</option>
+              </select>
+              <button type="submit" disabled={isSubmitting}>
+                Зберегти зміни
+              </button>
+            </div>
+            {successMessage && (
+              <div className="success-mesage">Профіль оновлено</div>
+            )}
+          </Form>
+        )
+      }
     </Formik>
   );
 };
