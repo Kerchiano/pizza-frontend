@@ -11,6 +11,16 @@ export interface User {
   gender: string;
 }
 
+interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+interface LoginResponse {
+  refresh: string;
+  access: string;
+}
+
 export interface OrderItem {
   product?: number;
   product_title?: string;
@@ -96,7 +106,7 @@ export const authApi = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: ["Addresses", "Orders"],
   endpoints: (builder) => ({
-    login: builder.mutation({
+    login: builder.mutation<LoginResponse, LoginRequest>({
       query: (credentials) => ({
         url: "auth/jwt/create/",
         method: "POST",

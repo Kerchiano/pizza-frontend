@@ -1,19 +1,19 @@
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import MainPage from "./components/MainPage";
-import RestaurantDetail from "./components/RestaurantDetail";
-import Restaurants from "./components/Restaurants";
-import Products from "./components/Products";
-import ProductDetail from "./components/ProductDetail";
-import RegistrationPage from "./components/RegistrationPage";
-import LoginPage from "./components/LoginPage";
-import Cabinet from "./components/Cabinet";
+import MainPage from "./pages/Main/MainPage";
+import RestaurantDetail from "./pages/RestaurantDetail/RestaurantDetail";
+import Products from "./pages/ProductCards/ProductCards";
+import ProductDetail from "./pages/ProductDetail/ProductDetail";
+import RegistrationPage from "./pages/Registration/RegistrationPage";
+import LoginPage from "./pages/Authorization/LoginPage";
+import Cabinet from "./pages/PersonalCabinet/Cabinet";
 import Modal from "react-modal";
-import PersonalData from "./components/PersonalData";
-import { Orders } from "./components/Orders";
-import Checkout from "./components/Checkout";
-import Layout from "./components/Layout";
-import Whoops from "./components/Whoops";
-import InitialWrapper from "./components/InitialWrapper";
+import PersonalData from "./components/PersonalCabinet/PersonalData/PersonalData";
+import { Orders } from "./components/PersonalCabinet/Orders/Orders";
+import Checkout from "./pages/Checkout/Checkout";
+import Layout from "./components/Layout/Layout";
+import Whoops from "./components/common/Whoops/Whoops";
+import InitialWrapper from "./components/wrappers/InitialWrapper";
+import Restaurants from "./pages/RestaurantCards/RestaurantCards";
 
 Modal.setAppElement("#root");
 
