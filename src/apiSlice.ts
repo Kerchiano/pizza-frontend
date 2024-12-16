@@ -69,7 +69,7 @@ export interface Review {
 
 export const apiSlice = createApi({
   reducerPath: "api-cities",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://127.0.0.1:8000" }),
+  baseQuery: fetchBaseQuery({ baseUrl: "https://pizza-backend-t2lf.onrender.com/" }),
   endpoints: (builder) => ({
     getCities: builder.query<City[], void>({
       query: () => "/cities/",

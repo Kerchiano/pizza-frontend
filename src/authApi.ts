@@ -57,7 +57,7 @@ export interface UserAddresses {
 type UserWithoutPhone = Omit<User, "phone_number">;
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "http://localhost:8000/",
+  baseUrl: "https://pizza-backend-t2lf.onrender.com/",
   credentials: "include",
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.accessToken;
