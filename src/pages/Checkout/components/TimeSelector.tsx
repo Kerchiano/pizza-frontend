@@ -24,7 +24,8 @@ const TimeSelector = ({ selectedDate }: TimeSelectorProps) => {
     let currentTime =
       (selectedDate === "Сьогодні" ||
         selectedDate === format(now, "yyyy-MM-dd")) &&
-      now < endTime
+      now < endTime &&
+      now > startTime
         ? now
         : startTime;
 

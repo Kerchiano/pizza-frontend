@@ -31,7 +31,7 @@ const ProductDetail = () => {
 
   return product ? (
     <>
-      <main>
+      <main className="flex-1">
         <section className="product-page">
           <div className="product-page-content">
             <div className="product-page-inside">
