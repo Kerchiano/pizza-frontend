@@ -80,7 +80,7 @@ const Products = () => {
 
   return category ? (
     <>
-      <main className="pl-20 pt-20 flex-1 flex w-full flex-col">
+      <main className="pl-20 pt-20 flex-1 flex w-full flex-col bg-white">
         <section className="pr-10 pl-10 flex justify-between items-center min-h-20 w-full section-filters">
           <h1 className="text-3xl text-black font-semibold mr-5">
             {category?.title}
