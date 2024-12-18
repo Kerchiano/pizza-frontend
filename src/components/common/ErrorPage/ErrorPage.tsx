@@ -8,7 +8,7 @@ const ErrorPage = () => {
   };
   return (
     <>
-      <main className="flex flex-1 w-full flex-col mt-30 lg:mt-20 items-center lg:pl-20">
+      <main className="flex flex-1 w-full flex-col mt-30 lg:mt-20 items-center lg:pl-20 bg-white">
         <section className="error-page">
           <h1>Помилка</h1>
           <div className="error-type">404</div>

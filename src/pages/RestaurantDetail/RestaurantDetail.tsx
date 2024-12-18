@@ -24,7 +24,7 @@ const RestaurantDetail = () => {
 
   return restaurant ? (
     <>
-      <main className="mt-[120px] flex-1 w-full flex flex-col pl-20">
+      <main className="mt-[120px] flex-1 w-full flex flex-col pl-20 bg-white">
         <section className="restaurants-page rest-detail">
           <div className="block-title">Ресторани</div>
           <h1 className="text-center text-2xl text-black font-bold">{`${restaurant?.address}`}</h1>

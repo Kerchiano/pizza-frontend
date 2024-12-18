@@ -15,7 +15,7 @@ const MainPage = () => {
 
   return isPathValid ? (
     <>
-      <div className={cityName === "Київ" ? "" : "flex-1"}>
+      <div className={cityName === "Київ" ? "" : "flex-1 mb-10"}>
         <DiscountCarousel />
       </div>
       {cityName == "Київ" && (
