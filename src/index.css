@@ -1543,6 +1543,7 @@ header {
   border-bottom: 1px solid rgba(169, 144, 113, 0.2);
   overflow: hidden;
   overflow-y: scroll;
+  margin-bottom: 10px;
 }
 
 .pop-cart .cart-container .full-price {
