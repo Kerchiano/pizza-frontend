@@ -17,6 +17,12 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+#root {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
 a {
   font-weight: 500;
   color: #fff;
@@ -33,6 +39,13 @@ body {
   overflow-y: scroll;
   overflow-x: hidden;
   font-family: "Museo", sans-serif;
+  background-color: #ffffff;
+  color: black;
+}
+
+input, select, textarea {
+  background-color: #ffffff;
+  color: black;
 }
 
 h1 {
@@ -2082,7 +2095,8 @@ header {
   }
 }
 
-.not-address, .not-orders {
+.not-address,
+.not-orders {
   display: block;
   width: 100%;
   margin: 0;
