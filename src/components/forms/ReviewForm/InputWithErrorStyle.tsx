@@ -7,7 +7,7 @@ interface InputWithErrorStyleProps {
   disabled?: boolean;
 }
 
-export const InputWithErrorStyle = ({ name, type, placeholder }: InputWithErrorStyleProps) => {
+export const InputWithErrorStyle = ({ name, type, placeholder, disabled }: InputWithErrorStyleProps) => {
   const [field, meta] = useField(name);
   return (
     <div className="form-field">
@@ -17,6 +17,7 @@ export const InputWithErrorStyle = ({ name, type, placeholder }: InputWithErrorS
       <input
         {...field}
         type={type}
+        disabled={disabled}
         className={`border p-2 rounded w-full ${
           meta.touched && meta.error ? "border-red-500 mb-0" : "mb-4"
         }`}

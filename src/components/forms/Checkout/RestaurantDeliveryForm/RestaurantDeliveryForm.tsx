@@ -39,12 +39,14 @@ const RestaurantDeliveryForm = ({
   const cartTotalPrice = useSelector(selectCartTotalPrice);
   const { data: restaurants = [] } = useGetRestaurantsByCityQuery(citySlug);
   const [selectedDate, setSelectedDate] = useState<string>("Сьогодні");
-  const [addOrder] = useAddOrderMutation();
+  const [addOrder, {isLoading: orderIsLoading}] = useAddOrderMutation();
   const cartItems = useSelector(selectCartItems);
   const cartToppingItems = useSelector(selectCartToppingItems);
   const navigate = useNavigate();
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const dispatch = useDispatch();
+
+  console.log(orderIsLoading);
 
   const openModal = () => {
     setModalIsOpen(true);
@@ -138,6 +140,14 @@ const RestaurantDeliveryForm = ({
           </>
         )}
       </Formik>
+      {orderIsLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 bg-opacity-70 z-10">
+          <div
+            className="w-[150px] h-[150px] border-[16px] border-t-transparent border-green-500 rounded-full animate-spin"
+            role="status"
+          ></div>
+        </div>
+      )}
       <OrderSuccessModal modalIsOpen={modalIsOpen} closeModal={closeModal} />
     </>
   );

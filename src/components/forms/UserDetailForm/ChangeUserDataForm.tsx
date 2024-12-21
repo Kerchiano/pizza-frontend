@@ -68,16 +68,19 @@ const PersonalDataForm = ({
         ) : (
           <Form className="personad-data-form flex flex-wrap justify-between">
             <InputWithErrorStyle
+              maxLength={50}
               name="first_name"
               type="text"
               placeholder="Ім'я"
             />
             <InputWithErrorStyle
+              maxLength={12}
               name="phone_number"
               type="text"
               placeholder="Номер телефону"
             />
             <InputWithErrorStyle
+              maxLength={100}
               name="email"
               type="email"
               placeholder="Електронна пошта"

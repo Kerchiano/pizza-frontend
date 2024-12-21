@@ -7,7 +7,7 @@ const Cabinet = () => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
 
   return isAuthenticated ? (
-    <main className="pl-20 mt-25 lg:mt-20 flex w-full flex-col flex-1 bg-gray-100">
+    <main className="pl-20 mt-25 lg:mt-20 flex w-full flex-col bg-gray-100 flex-1">
       <section className="px-[20px] py-[40px] lg:p-[60px] lg:pt-[0] min-h-[654px]">
         <div className="profile-container">
           <h1>Особистий кабінет</h1>

@@ -6,12 +6,18 @@ import { authApi } from "../../../authApi";
 import { validationSchema } from "./validationSchema";
 import { isErrorResponse } from "./isErrorResponse";
 import InputWithErrorStyle from "./InputWithErrorStyle";
+import {
+  openReviewModal,
+  selectIsAnimating,
+  setAnimating,
+} from "../../../modalSlice";
+import { useSelector } from "react-redux";
 
 export interface LoginErrorResponse {
   status: number;
   data: {
-    password?: string[];
     email?: string[];
+    password?: string[];
   };
 }
 
@@ -41,6 +47,12 @@ const LoginForm = ({ login }: LoginFormProps) => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const openReview = () => {
+    dispatch(openReviewModal());
+    setTimeout(() => dispatch(setAnimating(true)), 10);
+    document.body.style.overflowY = "hidden";
+  };
+
   return (
     <Formik
       initialValues={{
@@ -57,9 +69,15 @@ const LoginForm = ({ login }: LoginFormProps) => {
           localStorage.setItem("refresh", user.refresh);
 
           const params = new URLSearchParams(location.search);
+          const modalParam = params.get("modal");
           const redirectPath =
             params.get("redirect") || "/profile/personal_data";
-          navigate(redirectPath);
+          if (modalParam) {
+            openReview();
+            navigate(redirectPath);
+          } else {
+            navigate(redirectPath);
+          }
         } catch (err: unknown) {
           console.error("Failed to login: ", err);
 
@@ -74,8 +92,14 @@ const LoginForm = ({ login }: LoginFormProps) => {
     >
       {({ isSubmitting }) => (
         <Form className="login-form">
-          <InputWithErrorStyle name="email" type="email" placeholder="Email" />
           <InputWithErrorStyle
+            maxLength={100}
+            name="email"
+            type="email"
+            placeholder="Email"
+          />
+          <InputWithErrorStyle
+            maxLength={64}
             name="password"
             type="password"
             placeholder="Password"

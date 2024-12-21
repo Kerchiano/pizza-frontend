@@ -5,12 +5,14 @@ interface InputWithErrorStyleProps {
   type: string;
   placeholder: string;
   disabled?: boolean;
+  maxLength: number;
 }
 
 const InputWithErrorStyle = ({
   name,
   type,
   placeholder,
+  maxLength,
 }: InputWithErrorStyleProps) => {
   const [field, meta] = useField(name);
 
@@ -21,6 +23,7 @@ const InputWithErrorStyle = ({
       <input
         {...field}
         type={type}
+        maxLength={maxLength}
         placeholder={placeholder}
         className={`border p-2 rounded w-full ${
           errorText ? "border-red-500 mb-0" : "mb-4"

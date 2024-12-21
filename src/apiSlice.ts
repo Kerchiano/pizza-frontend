@@ -62,9 +62,6 @@ export interface Review {
   review: string;
   rating: string;
   restaurant: undefined;
-  email?: string;
-  first_name?: string;
-  phone_number?: string;
 }
 
 export const apiSlice = createApi({

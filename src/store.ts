@@ -4,6 +4,7 @@ import cityReducer from './citySlice';
 import cartReducer from './cartSlice';
 import { authApi } from './authApi';
 import authReducer from './authSlice';
+import ModalReducer from './modalSlice';
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     auth: authReducer,
     city: cityReducer,
     cart: cartReducer,
+    modal: ModalReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(apiSlice.middleware).concat(authApi.middleware),

@@ -8,7 +8,6 @@ import {
 } from "../../../apiSlice";
 import SelectError from "../../common/SelectError";
 import { validationSchema } from "./validationSchema";
-import { isErrorResponse } from "./isErrorResponse";
 import { TextareaWithErrorStyle } from "./TextareaWithErrorStyle";
 import { InputWithErrorStyle } from "./InputWithErrorStyle";
 import FeedbackTypeSelector from "./FeedbackTypeSelector";
@@ -27,24 +26,13 @@ export interface ReviewFormProps {
 }
 
 const ReviewForm = ({ closeReviewForm, openModal }: ReviewFormProps) => {
-  const [reviewDetail] = useAddReviewMutation();
+  const [reviewDetail, { isLoading }] = useAddReviewMutation();
   const token = useSelector((state: RootState) => state.auth.accessToken);
   const citySlug = useSelector((state: RootState) => state.city.citySlug);
   const { data: restaurants = [] } = useGetRestaurantsByCityQuery(citySlug);
   const { data: userDetails } = useGetUserDetailsQuery(undefined, {
     skip: !token,
   });
-
-  const transformErrors = (err: ReviewErrorResponse) => {
-    const formikErrors: { [key: string]: string } = {};
-    if (err.data.email) {
-      formikErrors.email = err.data.email[0];
-    }
-    if (err.data.phone_number) {
-      formikErrors.phone_number = err.data.phone_number[0];
-    }
-    return formikErrors;
-  };
 
   return (
     <>
@@ -62,20 +50,12 @@ const ReviewForm = ({ closeReviewForm, openModal }: ReviewFormProps) => {
         validationSchema={validationSchema}
         validateOnChange={true}
         validateOnBlur={false}
-        onSubmit={async (values, { setSubmitting, setErrors }) => {
+        onSubmit={async (values, { setSubmitting }) => {
           try {
-            if (values.user) {
-              const { first_name, phone_number, email, ...userIsExist } =
-                values;
-              await reviewDetail(userIsExist).unwrap();
-            } else {
-              await reviewDetail(values).unwrap();
-            }
+            const { first_name, phone_number, email, ...userIsExist } = values;
+            await reviewDetail(userIsExist).unwrap();
           } catch (err: unknown) {
             console.error("Failed to add review: ", err);
-            if (isErrorResponse(err)) {
-              setErrors(transformErrors(err));
-            }
           } finally {
             setSubmitting(false);
             closeReviewForm();
@@ -85,22 +65,28 @@ const ReviewForm = ({ closeReviewForm, openModal }: ReviewFormProps) => {
       >
         {({ isSubmitting, values, setFieldValue }) => (
           <Form className="review-form">
-            <FeedbackTypeSelector setFieldValue={setFieldValue} values={values} />
+            <FeedbackTypeSelector
+              setFieldValue={setFieldValue}
+              values={values}
+            />
             <TextareaWithErrorStyle name="review" placeholder="Відгук" />
             <InputWithErrorStyle
               name="first_name"
               type="text"
               placeholder="Ім'я"
+              disabled={true}
             />
             <InputWithErrorStyle
               name="phone_number"
               type="text"
               placeholder="Номер телефону"
+              disabled={true}
             />
             <InputWithErrorStyle
               name="email"
               type="text"
               placeholder="Електронна пошта"
+              disabled={true}
             />
             <SelectError
               name="restaurant"
@@ -116,6 +102,14 @@ const ReviewForm = ({ closeReviewForm, openModal }: ReviewFormProps) => {
           </Form>
         )}
       </Formik>
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 bg-opacity-70 z-10">
+          <div
+            className="w-[150px] h-[150px] border-[16px] border-t-transparent border-green-500 rounded-full animate-spin"
+            role="status"
+          ></div>
+        </div>
+      )}
     </>
   );
 };

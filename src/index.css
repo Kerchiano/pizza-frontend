@@ -44,7 +44,9 @@ body {
   color: black;
 }
 
-input, select, textarea {
+input,
+select,
+textarea {
   background-color: #ffffff;
   color: black;
 }
@@ -1446,6 +1448,7 @@ header {
   padding: 40px;
 }
 
+
 .restaurant-info .worktime-phones {
   display: flex;
   font-size: 30px;
@@ -1790,6 +1793,10 @@ header {
   .form-title {
     text-transform: none;
   }
+  .add-delivery-address input {
+    text-align: left !important;
+    padding: 0 20px !important;
+  }
 }
 
 @media (max-width: 427px) {
@@ -1954,6 +1961,11 @@ header {
   line-height: 48px;
   color: #000;
   font-size: 16px;
+}
+
+.flat-field input {
+  padding: 0 10px;
+  text-align: center;
 }
 
 .add-delivery-address button {
@@ -2331,6 +2343,7 @@ header {
 }
 
 .checkout {
+  position: relative;
   padding: 0;
   border: none;
   background: 0 0;
@@ -2427,6 +2440,10 @@ header {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+}
+
+.review-form input:disabled {
+  border: none;
 }
 
 .courier-delivery-form .form-field,
@@ -2954,6 +2971,13 @@ header {
   .checkout-auth-container a:last-of-type {
     font-size: 24px;
   }
+
+  .flat-field input,
+  .floor-field input,
+  .entrance-field input {
+    padding: 0 10px;
+    text-align: center;
+  }
 }
 
 .checkout-auth-container {
@@ -3064,6 +3088,14 @@ header {
   .error-page .error-text {
     font-size: 18px;
   }
+  .flat-field input {
+    padding: 0 7px;
+  }
+
+  .add-delivery-address input {
+    text-align: center;
+    padding: 0;
+  }
 }
 
 @media (max-width: 735px) {
@@ -3108,4 +3140,6 @@ header {
   .checkout-btn-restaurant {
     width: 280px;
   }
+
+  
 }

@@ -43,7 +43,7 @@ const CourierDeliveryForm = ({
   const cartTotalPrice = useSelector(selectCartTotalPrice);
   const [selectedDate, setSelectedDate] = useState<string>("Сьогодні");
   const [addAddress] = useAddAddressMutation();
-  const [addOrder] = useAddOrderMutation();
+  const [addOrder, { isLoading: orderIsLoading }] = useAddOrderMutation();
   const cartItems = useSelector(selectCartItems);
   const cartToppingItems = useSelector(selectCartToppingItems);
   const navigate = useNavigate();
@@ -111,11 +111,13 @@ const CourierDeliveryForm = ({
             ) : (
               <Form className="courier-delivery-form">
                 <InputWithErrorStyle
+                  maxLength={50}
                   name="first_name"
                   type="text"
                   placeholder="Ім'я:"
                 />
                 <InputWithErrorStyle
+                  maxLength={100}
                   name="phone_number"
                   type="text"
                   placeholder="Номер телефону:"
@@ -138,26 +140,31 @@ const CourierDeliveryForm = ({
                       city={values.city}
                     />
                     <InputWithErrorStyle
+                      maxLength={100}
                       placeholder="Вулиця:"
                       name="street"
                       type="text"
                     />
                     <InputWithErrorStyle
+                      maxLength={2}
                       placeholder="Будинок:"
                       name="house_number"
                       type="text"
                     />
                     <InputWithErrorStyle
+                      maxLength={2}
                       placeholder="Під'їзд:"
                       name="floor"
                       type="text"
                     />
                     <InputWithErrorStyle
+                      maxLength={2}
                       placeholder="Этаж:"
                       name="entrance"
                       type="text"
                     />
                     <InputWithErrorStyle
+                      maxLength={3}
                       placeholder="Квартира:"
                       name="flat"
                       type="text"
@@ -175,6 +182,7 @@ const CourierDeliveryForm = ({
                 <PaymentField handleChange={handleChange} />
                 {values.payment_method !== "C" && (
                   <InputWithErrorStyle
+                    maxLength={7}
                     placeholder="Підготувати решту з:"
                     name="paid_amount"
                     type="text"
@@ -189,6 +197,14 @@ const CourierDeliveryForm = ({
           </>
         )}
       </Formik>
+      {orderIsLoading && (
+        <div className="absolute inset-0 flex items-end justify-center bg-gray-100 bg-opacity-70 z-10">
+          <div
+            className="w-[150px] h-[150px] mb-64 border-[16px] border-t-transparent border-green-500 rounded-full animate-spin"
+            role="status"
+          ></div>
+        </div>
+      )}
       <OrderSuccessModal modalIsOpen={modalIsOpen} closeModal={closeModal} />
     </>
   );

@@ -30,7 +30,7 @@ const transformErrors = (err: RegisterErrorResponse) => {
 };
 
 const RegistrationForm = () => {
-  const [register] = useRegisterMutation();
+  const [register, { isLoading }] = useRegisterMutation();
   const navigate = useNavigate();
   const location = useLocation();
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -79,20 +79,24 @@ const RegistrationForm = () => {
           <Form className="registration-form">
             <InputWithErrorStyle
               name="first_name"
+              maxLength={50}
               type="text"
               placeholder="First Name"
             />
             <InputWithErrorStyle
+              maxLength={100}
               name="email"
               type="email"
               placeholder="Email"
             />
             <InputWithErrorStyle
+              maxLength={12}
               name="phone_number"
               type="tel"
               placeholder="Phone Number"
             />
             <InputWithErrorStyle
+              maxLength={64}
               name="password"
               type="password"
               placeholder="Password"
@@ -103,6 +107,14 @@ const RegistrationForm = () => {
           </Form>
         )}
       </Formik>
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 bg-opacity-70 z-10">
+          <div
+            className="w-[150px] h-[150px] border-[16px] border-t-transparent border-green-500 rounded-full animate-spin"
+            role="status"
+          ></div>
+        </div>
+      )}
       <UserCreatedSuccess modalIsOpen={modalIsOpen} closeModal={closeModal} />
     </>
   );

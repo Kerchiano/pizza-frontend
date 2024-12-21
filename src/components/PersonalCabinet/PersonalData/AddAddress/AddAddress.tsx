@@ -46,26 +46,31 @@ const AddAddress = ({ user }: IAddAddress) => {
               handleChange={handleChange}
             />
             <InputWithErrorStyle
+              maxLength={100}
               placeholder="Вулиця:"
               name="street"
               type="text"
             />
             <InputWithErrorStyle
+              maxLength={2}
               placeholder="Будинок:"
               name="house_number"
               type="text"
             />
             <InputWithErrorStyle
+              maxLength={2}
               placeholder="Під'їзд:"
               name="floor"
               type="text"
             />
             <InputWithErrorStyle
-              placeholder="Этаж:"
+              maxLength={2}
+              placeholder="Поверх:"
               name="entrance"
               type="text"
             />
             <InputWithErrorStyle
+              maxLength={3}
               placeholder="Квартира:"
               name="flat"
               type="text"

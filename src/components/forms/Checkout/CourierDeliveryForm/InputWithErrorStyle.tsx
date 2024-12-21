@@ -1,13 +1,20 @@
 import { useField } from "formik";
 
 interface InputWithErrorStyleProps {
-    name: string;
-    type: string;
-    placeholder: string;
-    disabled?: boolean;
-  }
+  name: string;
+  type: string;
+  placeholder: string;
+  disabled?: boolean;
+  maxLength: number;
+}
 
-const InputWithErrorStyle = ({ name, type, placeholder, disabled }: InputWithErrorStyleProps) => {
+const InputWithErrorStyle = ({
+  name,
+  type,
+  placeholder,
+  disabled,
+  maxLength,
+}: InputWithErrorStyleProps) => {
   const [field, meta] = useField(name);
   const isDisabled =
     name === "phone_number" || name === "first_name" ? true : disabled;
@@ -21,6 +28,7 @@ const InputWithErrorStyle = ({ name, type, placeholder, disabled }: InputWithErr
         <input
           {...field}
           type={type}
+          maxLength={maxLength}
           disabled={isDisabled}
           className={`border p-2 rounded w-full ${
             meta.touched && meta.error ? "border-red-500 mb-0" : "mb-4"

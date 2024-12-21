@@ -5,6 +5,7 @@ interface InputWithErrorStyleProps {
   type: string;
   placeholder: string;
   disabled?: boolean;
+  maxLength: number;
 }
 
 export const InputWithErrorStyle = ({
@@ -12,6 +13,7 @@ export const InputWithErrorStyle = ({
   type,
   placeholder,
   disabled,
+  maxLength,
 }: InputWithErrorStyleProps) => {
   const [field, meta] = useField(name);
   const isDisabled = name === "phone_number" ? true : disabled;
@@ -23,6 +25,7 @@ export const InputWithErrorStyle = ({
       <input
         {...field}
         type={type}
+        maxLength={maxLength}
         placeholder={placeholder}
         disabled={isDisabled}
         className={`border p-2 rounded w-full ${

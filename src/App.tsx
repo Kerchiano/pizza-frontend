@@ -14,12 +14,17 @@ import Layout from "./components/Layout/Layout";
 import Whoops from "./components/common/Whoops/Whoops";
 import InitialWrapper from "./components/wrappers/InitialWrapper";
 import Restaurants from "./pages/RestaurantCards/RestaurantCards";
+import Navbar from "./components/Navbar/Navbar";
+import Footer from "./components/Footer/Footer";
+import ScrollToTop from "./components/common/ScrollTop";
 
 Modal.setAppElement("#root");
 
 function App() {
   return (
     <Router>
+      <ScrollToTop />
+      <Navbar />
       <InitialWrapper>
         <Routes>
           <Route element={<Layout />}>
@@ -50,6 +55,7 @@ function App() {
           <Route path="*" element={<Whoops />} />
         </Routes>
       </InitialWrapper>
+      <Footer />
     </Router>
   );
 }
