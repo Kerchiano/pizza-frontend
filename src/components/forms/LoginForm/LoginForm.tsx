@@ -6,12 +6,7 @@ import { authApi } from "../../../authApi";
 import { validationSchema } from "./validationSchema";
 import { isErrorResponse } from "./isErrorResponse";
 import InputWithErrorStyle from "./InputWithErrorStyle";
-import {
-  openReviewModal,
-  selectIsAnimating,
-  setAnimating,
-} from "../../../modalSlice";
-import { useSelector } from "react-redux";
+import { openReviewModal, setAnimating } from "../../../modalSlice";
 
 export interface LoginErrorResponse {
   status: number;

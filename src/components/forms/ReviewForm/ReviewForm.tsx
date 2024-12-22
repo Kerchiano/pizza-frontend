@@ -30,9 +30,10 @@ const ReviewForm = ({ closeReviewForm, openModal }: ReviewFormProps) => {
   const token = useSelector((state: RootState) => state.auth.accessToken);
   const citySlug = useSelector((state: RootState) => state.city.citySlug);
   const { data: restaurants = [] } = useGetRestaurantsByCityQuery(citySlug);
-  const { data: userDetails } = useGetUserDetailsQuery(undefined, {
-    skip: !token,
-  });
+  const { data: userDetails, isLoading: userDetailIsLoading } =
+    useGetUserDetailsQuery(undefined, {
+      skip: !token,
+    });
 
   return (
     <>
@@ -102,7 +103,7 @@ const ReviewForm = ({ closeReviewForm, openModal }: ReviewFormProps) => {
           </Form>
         )}
       </Formik>
-      {isLoading && (
+      {(isLoading || userDetailIsLoading) && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100 bg-opacity-70 z-10">
           <div
             className="w-[150px] h-[150px] border-[16px] border-t-transparent border-green-500 rounded-full animate-spin"
