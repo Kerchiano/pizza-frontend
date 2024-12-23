@@ -286,7 +286,8 @@ button {
 }
 
 .slick-list img {
-  max-height: 450px;
+  max-height: 550px;
+  height: 100%;
   max-width: 1920px;
   margin: 0 auto;
 }
@@ -399,6 +400,7 @@ footer {
 .products-list .product-item {
   margin: 0 30px 30px;
   position: relative;
+  width: calc(25% - 60px);
 }
 
 header {
@@ -412,7 +414,7 @@ header {
   font-size: 24px;
   line-height: 30px;
   font-family: Museo700, sans-serif;
-  max-height: 90px;
+  height: 57px;
   overflow: hidden;
   margin-bottom: 10px;
 }
@@ -805,6 +807,16 @@ header {
 
 .mobile-bottom {
   display: none;
+}
+
+.restaurant-list .restaurant-item {
+  width: calc(25% - 30px);
+}
+
+@media (max-width: 1600px) {
+  .products-list .product-item {
+    width: calc(33.333% - 60px);
+  }
 }
 
 @media (max-width: 1023px) {
@@ -1447,7 +1459,6 @@ header {
 .restaurant-info {
   padding: 40px;
 }
-
 
 .restaurant-info .worktime-phones {
   display: flex;
@@ -3140,6 +3151,4 @@ header {
   .checkout-btn-restaurant {
     width: 280px;
   }
-
-  
 }
