@@ -45,7 +45,7 @@ const DiscountCarousel = () => {
         {isLoading
           ? Array.from({ length: 3 }).map((_, index) => (
               <div key={index}>
-                <Skeleton className="h-[150px] sm:h-[200px] md:h-[300px] lg:h-[380px]" width="100%" />
+                <Skeleton className="h-[150px] sm:h-[200px] md:h-[300px] lg:h-[380px] 2xl:h-[550px]" width="100%" />
               </div>
             ))
           : data.map((item, index) => (
@@ -54,10 +54,10 @@ const DiscountCarousel = () => {
                   <img
                     src={item.image}
                     alt={`Discount ${index}`}
-                    className="h-[150px] sm:h-[200px] md:h-[300px] lg:h-[380px] w-full"
+                    className="h-[150px] sm:h-[200px] md:h-[300px] lg:h-[380px] 2xl:h-[550px] w-full"
                   />
                 ) : (
-                  <Skeleton className="h-[150px] sm:h-[200px] md:h-[300px] lg:h-[380px]" width="100%" />
+                  <Skeleton className="h-[150px] sm:h-[200px] md:h-[300px] lg:h-[380px] 2xl:h-[550px]" width="100%" />
                 )}
                 <img
                   src={item.image}
