@@ -39,7 +39,11 @@ const RegistrationForm = () => {
   const closeModal = () => {
     setModalIsOpen(false);
     const params = new URLSearchParams(location.search);
-    const redirectPath = params.get("redirect")
+    const modalParam = params.get("modal");
+    const checkRedirectPath = params.get("redirect");
+    const redirectPath = modalParam
+      ? `/login?redirect=${checkRedirectPath}&modal=true`
+      : checkRedirectPath
       ? `/login?redirect=/checkout`
       : "/login";
     navigate(redirectPath);

@@ -72,7 +72,7 @@ export const apiSlice = createApi({
       query: () => "/cities/",
     }),
     getRestaurantsByCity: builder.query<Restaurant[], string>({
-      query: (citySlug) => `/restaurants/?city=${citySlug}`,
+      query: (citySlug) => `/restaurants/?city_slug=${citySlug}`,
     }),
     getRestaurantByRestaurantSlug: builder.query<Restaurant, string>({
       query: (restaurantSlug) => `/restaurants/${restaurantSlug}/`,
