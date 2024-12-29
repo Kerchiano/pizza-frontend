@@ -52,6 +52,9 @@ const PersonalDataForm = ({
         try {
           await changeUserDetails(dataToSubmit).unwrap();
           setSuccessMessage(true);
+          setTimeout(() => {
+            setSuccessMessage(false);
+          }, 3000);
         } catch (err: unknown) {
           console.error("Failed to change personal data: ", err);
           if (isErrorResponse(err)) {

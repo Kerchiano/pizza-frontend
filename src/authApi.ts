@@ -104,7 +104,7 @@ const baseQueryWithReauth = async (
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["Addresses", "Orders"],
+  tagTypes: ["Addresses", "Orders", "UserDetails"],
   endpoints: (builder) => ({
     login: builder.mutation<LoginResponse, LoginRequest>({
       query: (credentials) => ({
@@ -122,6 +122,7 @@ export const authApi = createApi({
     }),
     getUserDetails: builder.query<User, void>({
       query: () => "auth/users/me/",
+      providesTags: () => [{ type: "UserDetails" }],
     }),
     changeUserDetails: builder.mutation<User, UserWithoutPhone>({
       query: (userDetails) => ({
@@ -129,6 +130,7 @@ export const authApi = createApi({
         method: "PATCH",
         body: userDetails,
       }),
+      invalidatesTags: () => [{ type: "UserDetails" }],
     }),
     getUserAddresses: builder.query<UserAddresses[], number>({
       query: (id) => `/address/?user=${id}`,
